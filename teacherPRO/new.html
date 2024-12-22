@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://db.onlinewebfonts.com/c/4674c29fede917b1695c03e730aa503c?family=TraktorMoodFont"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="rest.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Загрузить новый ресурс</title>
+    <link rel="icon" href="./img/iconlogo.ico">
+
+</head>
+
+<body>
+    <header>
+        <div class="logo"><a href="index.html"><img src="./img/logo1.svg" alt=""></div></a>
+        <div class="nav">
+            <ul>
+                <a href="index.html">
+                    <li>Главная</li>
+                </a>
+                <a href="about_us.html">
+                    <li>О нас</li>
+                </a>
+                <a href="catalog.html">
+                    <li>Каталог</li>
+                </a>
+                <a href="personal.html">
+                    <li>Ваши разработки</li>
+                </a>
+            </ul>
+        </div>
+        <form action="new.html">
+            <button>+ Новый материал</button>
+        </form>
+    </header>
+    <section20>
+        <h2>Поделитесь своей образовательной разработкой </h2>
+        <form>
+            <h3>Название</h3>
+            <input type="text" required placeholder="Например, презентация на тему «История России» для 5 класса">
+
+
+            <h3>Укажите тип</h3>
+            <div class="checkbox-group">
+                <div class="chec">
+                    <p><input type="checkbox" id="presentations" name="materials">Презентации</p>
+                    <p><input type="checkbox" id="notes" name="materials">Конспекты и статьи</p>
+                    <p><input type="checkbox" id="audio" name="materials">Аудио</p>
+                </div>
+                <div class="chec">
+                    <p><input type="checkbox" id="video" name="materials">Видео</p>
+                    <p><input type="checkbox" id="practical" name="materials">Практические работы</p>
+                    <p><input type="checkbox" id="visual" name="materials">Наглядные материалы</p>
+                </div>
+                <div class="chec">
+                    <p> <input type="checkbox" id="checklists" name="materials">Чек-листы</p>
+                    <p> <input type="checkbox" id="lesson-plans" name="materials">Планы урока</p>
+                    <p> <input type="checkbox" id="course-complex" name="materials">Комплекс занятий</p>
+                </div>
+            </div>
+
+            <h3>Выберите файл</h3>
+            <div class="fl">
+                <input type="file" required>
+            </div>
+            <h3>Описание</h3>
+            <div class="toolbar">
+
+                <button onclick="formatText('bold')"><b><img src="./img/bold.svg" alt=""></b></button>
+                <button onclick="formatText('italic')"><i><img src="./img/italic.svg" alt=""></i></button>
+                <button onclick="formatText('underline')"><u><img src="./img/underline.svg" alt=""></u></button>
+                <button onclick="insertLink()"><img src="./img/link.svg" alt=""></button>
+                <button onclick="insertOrderedList()"><img src="./img/list-numbers.svg" alt=""></button>
+                <button onclick="insertUnorderedList()"><img src="./img/list.svg" alt=""></button>
+                <button onclick="undo()"><img src="./img/undo.svg" alt=""></button>
+                <button onclick="redo()"><img src="./img/redo.svg" alt=""></button>
+            </div>
+
+            <div id="editor" contenteditable="true"></div>
+            <h3>Выберите теги</h3>
+            <div class="checkbox-group">
+                <div class="chec">
+                    <p><input type="checkbox" id="presentations" name="materials">1 класс</p>
+                    <p><input type="checkbox" id="notes" name="materials">2 класс</p>
+                    <p><input type="checkbox" id="audio" name="materials">3 класс</p>
+                    <p><input type="checkbox" id="audio" name="materials">4 класс</p>
+                    <p><input type="checkbox" id="audio" name="materials">5 класс</p>
+
+
+                </div>
+                <div class="chec">
+                    <p><input type="checkbox" id="audio" name="materials">6 класс</p>
+                    <p><input type="checkbox" id="audio" name="materials">7 класс</p>
+                    <p><input type="checkbox" id="audio" name="materials">8 класс</p>
+                    <p><input type="checkbox" id="audio" name="materials">9 класс</p>
+                    <p><input type="checkbox" id="audio" name="materials">10-11 класс</p>
+                </div>
+                <div class="chec">
+                    <p><input type="checkbox" id="audio" name="materials">PDF</p>
+                    <p><input type="checkbox" id="audio" name="materials">DOCX</p>
+                    <p><input type="checkbox" id="audio" name="materials">MP4</p>
+                    <p><input type="checkbox" id="audio" name="materials">MP3</p>
+                    <p><input type="checkbox" id="audio" name="materials">PPTX</p>
+                </div>
+            </div>
+            <div class="sb">
+                <p><input type="checkbox" required> Я принимаю правила публикации</p>
+
+                <button>Загрузить</button>
+            </div>
+        </form>
+    </section20>
+    <footer>
+        </div>
+        <div class="two">
+            <div class="quecoop">
+                <img src="./img/logo2.svg" alt="">
+                <div class="question">
+                    <p>По всем вопросам:</p>
+                    <p>teacherpro@mail.ru</p>
+                </div>
+            </div>
+            <div class="nn">
+                <div class="navi">
+                    <ul>
+                        <a href="index.html">
+                            <li>Главная</li>
+                        </a>
+                        <a href="about_us.html">
+                            <li>О нас</li>
+                        </a>
+                        <a href="catalog.html">
+                            <li>Каталог</li>
+                        </a>
+                        <a href="personal.html">
+                            <li>Ваши разработки</li>
+                        </a>
+                    </ul>
+                </div>
+                <div class="navi2">
+                    <ul>
+                        <li>Поддержка</li>
+                        <li>Вопросы</li>
+                        <li>Документация</li>
+                        <li>Сотрудничество</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="three">
+                <img src="./img/vk.svg" alt="">
+                <img src="./img/youtube.svg" alt="">
+                <img src="./img/telegram.svg" alt="">
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let editor = document.getElementById('editor');
+
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+
+        function insertLink() {
+            let url = prompt("Введите URL ссылки:", "http://");
+            if (url) {
+                document.execCommand("insertHTML", false, `<a href="${url}">${url}</a>`);
+            }
+        }
+
+        function insertOrderedList() {
+            document.execCommand("insertOrderedList", false, null);
+        }
+
+        function insertUnorderedList() {
+            document.execCommand("insertUnorderedList", false, null);
+        }
+
+        function undo() {
+            document.execCommand("undo", false, null);
+        }
+
+        function redo() {
+            document.execCommand("redo", false, null);
+        }
+    </script>
+
+</body>
+
+</html>
