@@ -1,34 +1,47 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Регистрация</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://db.onlinewebfonts.com/c/4674c29fede917b1695c03e730aa503c?family=TraktorMoodFont"
+            rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet">
+        <title>Регистрация</title>
+        <link rel="icon" href="./img/iconlogo.ico">
+    </head>
        <style>
         body {
-            font-family: sans-serif;
             background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
+            text-align: center;
             height: 100vh;
+            background-color: #eeeadf;
             margin: 0;
         }
 
         .form-container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
+            background-color: #fefefe;
+            padding: 40px;
+            border-radius: 10px;
+            width: 643px;
+            height: 534px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            width: 350px;
         }
 
         h1 {
+            font:  600 32px Geologica;
             text-align: center;
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: 60px;
+            color: #200E49;
         }
 
          .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         .password {
@@ -47,8 +60,8 @@
 
 .password-control {
 	position: absolute;
-	top: 11px;
-	right: 10px;
+	top: 9px;
+    right: 155px;
 	display: inline-block;
 	width: 20px;
 	height: 20px;
@@ -57,20 +70,17 @@
 .password-control.view {
 	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23363636' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5'%3E%3Cpath d='M3 13c3.6-8 14.4-8 18 0'/%3E%3Cpath fill='%23363636' d='M12 17a3 3 0 1 1 0-6a3 3 0 0 1 0 6'/%3E%3C/g%3E%3C/svg%3E") 0 0 no-repeat;
 }
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
+      
         .input-group input[type="email"],
         .input-group input[type="password"],
         .input-group input[type="text"] {
-            width: calc(100%);
+            width: 370px;
             padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 5px;
             margin-bottom: 5px;
-             box-sizing: border-box;
+            box-sizing: border-box;
+            font: 200 15px Geologica;
         }
          .input-group .password-container{
             position: relative;
@@ -81,22 +91,29 @@
          .input-group input[type="email"].invalid,
          .input-group .password-container input[type="password"].invalid{
             border-color: red;
+            font: 200 14px Geologica;
         }
 
         .error {
             color: red;
             margin-top: 5px;
             display: block;
+            font: 200 14px Geologica;
         }
 
         input[type="submit"] {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
+            width:fit-content;
+            height:fit-content;
+            padding: 20px;
+            background-color: #5b8dc8;
             border: none;
-            border-radius: 4px;
+            margin: 0 auto;
+            text-align: center;
+            border-radius: 10px;
+            font:  400 14px Geologica;
+            color: rgb(255, 255, 255);
+            margin-top: 30px;
             cursor: pointer;
-            width: 100%;
             transition: background-color 0.3s;
         }
 
@@ -106,8 +123,9 @@
 
         .auth-link {
            text-align: center;
-           margin-top: 15px;
+           margin-top: 30px;
            font-size: 0.9em;
+           font: 200 15px Geologica;
         }
              .password-toggle {
             position: absolute;
@@ -117,38 +135,46 @@
             cursor: pointer;
              user-select: none;
         }
+        .close {
+  color: #606060;
+  float: left;
+  font: 200 14px Geologica;
+}
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
 
     </style>
-</head>
 <body>
+    
     <div class="form-container">
+        <a href="/index"><span class="close" id="closeConfirm">← На главную</span></a>
     <h1>Регистрация</h1>
         <% if (error) { %>
         <p class="error"><%= error %></p>
         <% } %>
         <form method="post" action="/register">
             <div class="input-group">
-               <label for="fullName">ФИО:</label><br>
-               <input type="text" id="fullName" name="fullName" required
+               <input type="text" id="fullName" name="fullName" placeholder="Введите ФИО" required
                  <% if (error && error.includes('ФИО')) {%> class = "invalid" <%}%>>
             </div>
              <div class="input-group">
-               <label for="email">Почта:</label><br>
-               <input type="email" id="email" name="email" required
+               <input type="email" id="email" name="email" placeholder="Введите почту" required
                  <% if (error && error.includes('email')) {%> class = "invalid" <%}%>>
             </div>
             <div class="input-group">
-               <label for="password">Пароль:</label><br>
               <div class="password-container">
-                <input type="password" id="password" name="password" required
+                <input type="password" id="password" name="password" placeholder="Введите пароль" required
                  <% if (error && error.includes('Пароль')) {%> class = "invalid" <%}%>>
                  <a href="#" class="password-control" onclick="return show_hide_password(this);"></a>
               </div>
             </div>
             <div class="input-group">
-              <label for="confirmPassword">Повторите пароль:</label><br>
               <div class="password-container">
-                <input type="password" id="confirmPassword" name="confirmPassword" required
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Повторите пароль" required
                   <% if (error && error.includes('Пароли не совпадают')) {%> class = "invalid" <%}%>>
                   <a href="#" class="password-control" onclick="return show_hide_password2(this);"></a>
               </div>
@@ -156,7 +182,7 @@
             <input type="submit" value="Зарегистрироваться">
         </form>
           <div class="auth-link">
-             <p><a href="/login">Авторизация</a></p>
+             <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
           </div>
     </div>
         <script>
