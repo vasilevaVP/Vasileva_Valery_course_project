@@ -4,6 +4,7 @@ const session = require("express-session");
 const { Sequelize, DataTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 const path = require("path");
+const multer = require("multer");
 
 const app = express();
 const port = 3000;
@@ -326,6 +327,7 @@ sequelize
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json()); // Middleware для обработки JSON
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -362,7 +364,6 @@ function hasRole(roleName) {
     }
   };
 }
-
 // Маршруты
 
 // Главная страница
@@ -396,6 +397,168 @@ app.get("/about_us", async (req, res) => {
 // Роут для страницы регистрации
 app.get("/register", async (req, res) => {
   res.render("register", { error: null });
+});
+
+// Админ панель
+app.get("/admin", isAuthenticated, hasRole("admin"), async (req, res) => {
+  res.render("admin", { user: req.session.user });
+});
+
+//  настройка multer для обработки загрузки файлов
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "public", "uploads"));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|pdf|docx|pptx|mp4/;
+  const mimeType = allowedTypes.test(file.mimetype);
+  const extName = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+  if (mimeType && extName) {
+    return cb(null, true);
+  } else {
+    cb("Ошибка: Неправильный формат файла");
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit for all files
+  },
+});
+
+// AJAX endpoints для добавления
+app.post(
+  "/admin/add/tag",
+  isAuthenticated,
+  hasRole("admin"),
+  async (req, res) => {
+    const { name } = req.body;
+    if (!name || name.trim() === "") {
+      return res.status(400).send({ error: "Имя тега не может быть пустым." });
+    }
+    try {
+      const existingTag = await Tag.findOne({ where: { name: name.trim() } });
+      if (existingTag) {
+        return res
+          .status(400)
+          .send({ error: "Тег с таким именем уже существует." });
+      }
+      const tag = await Tag.create({ name: name.trim() });
+      res.status(201).send({ success: true, tag });
+    } catch (error) {
+      console.error("Ошибка при добавлении тега:", error);
+      res.status(500).send({ error: "Ошибка сервера." });
+    }
+  }
+);
+app.post(
+  "/admin/add/category",
+  isAuthenticated,
+  hasRole("admin"),
+  async (req, res) => {
+    const { name } = req.body;
+    if (!name || name.trim() === "") {
+      return res
+        .status(400)
+        .send({ error: "Имя категории не может быть пустым." });
+    }
+    try {
+      const existingCategory = await Category.findOne({
+        where: { name: name.trim() },
+      });
+      if (existingCategory) {
+        return res
+          .status(400)
+          .send({ error: "Категория с таким именем уже существует." });
+      }
+      const category = await Category.create({ name: name.trim() });
+      res.status(201).send({ success: true, category });
+    } catch (error) {
+      console.error("Ошибка при добавлении категории:", error);
+      res.status(500).send({ error: "Ошибка сервера." });
+    }
+  }
+);
+app.post(
+  "/admin/add/development",
+  isAuthenticated,
+  hasRole("admin"),
+  upload.fields([
+    { name: "preview", maxCount: 1 },
+    { name: "file_path", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const { title, description, categoryId, tags } = req.body;
+      const userId = req.session.user.id;
+      if (!req.files || !req.files["preview"] || !req.files["file_path"]) {
+        return res.status(400).send({ error: "Не загружены файлы." });
+      }
+
+      const previewPath = req.files["preview"][0].path.replace("public\\", "");
+      const filePath = req.files["file_path"][0].path.replace("public\\", "");
+
+      const development = await Development.create({
+        title,
+        description,
+        file_path: filePath,
+        preview: previewPath,
+        categoryId,
+        userId,
+      });
+
+      if (tags && tags.length > 0) {
+        const tagIds = Array.isArray(tags) ? tags : tags.split(",").map(Number);
+        await development.setTags(tagIds);
+      }
+
+      res.status(201).send({ success: true, development });
+    } catch (error) {
+      console.error("Ошибка при добавлении разработки:", error);
+      if (error instanceof multer.MulterError) {
+        return res.status(400).send({ error: error.message });
+      }
+      res.status(500).send({ error: "Ошибка при добавлении разработки" });
+    }
+  }
+);
+
+app.get(
+  "/admin/categories",
+  isAuthenticated,
+  hasRole("admin"),
+  async (req, res) => {
+    try {
+      const categories = await Category.findAll();
+      res.status(200).json(categories);
+    } catch (error) {
+      console.error("Ошибка получения категорий:", error);
+      res.status(500).send("Ошибка сервера");
+    }
+  }
+);
+
+app.get("/admin/tags", isAuthenticated, hasRole("admin"), async (req, res) => {
+  try {
+    const tags = await Tag.findAll();
+    res.status(200).json(tags);
+  } catch (error) {
+    console.error("Ошибка получения тегов:", error);
+    res.status(500).send("Ошибка сервера");
+  }
 });
 
 // Роут для обработки регистрации
