@@ -65,8 +65,8 @@ const User = sequelize.define(
       allowNull: false,
       validate: {
         len: {
-          args: [0, 100],
-          msg: "Пароль должен быть от 6 до 50 символов",
+          args: [6, 100],
+          msg: "Пароль должен быть от 6 до 100 символов",
         },
       },
     },
@@ -82,9 +82,214 @@ const User = sequelize.define(
   { timestamps: false }
 );
 
-// Установка связей
+// Модель Development
+const Development = sequelize.define(
+  "Development",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      field: "development_id",
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+    },
+    file_path: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    preview: {
+      type: DataTypes.STRING,
+    },
+    categoryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "category_id",
+      references: {
+        model: "categories",
+        key: "id",
+      },
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+  },
+  {
+    timestamps: false,
+  }
+);
+
+// Модель Category
+const Category = sequelize.define(
+  "Category",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      field: "category_id",
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+  },
+  {
+    timestamps: false,
+    tableName: "categories",
+  }
+);
+
+// Модель Tag
+const Tag = sequelize.define(
+  "Tag",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      field: "tag_id",
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+  },
+  {
+    timestamps: false,
+    tableName: "tags",
+  }
+);
+// Модель DownloadHistory
+const DownloadHistory = sequelize.define(
+  "DownloadHistory",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      field: "download_history_id",
+    },
+    download_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.NOW,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    developmentId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "development_id",
+      references: {
+        model: "developments",
+        key: "id",
+      },
+    },
+  },
+  {
+    timestamps: false,
+    tableName: "download_history",
+  }
+);
+
+// Модель Profile
+const Profile = sequelize.define(
+  "Profile",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      field: "profile_id",
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+  },
+  {
+    timestamps: false,
+    tableName: "profiles",
+  }
+);
+
+// Связующая таблица DevelopmentTags для Many-to-Many
+const DevelopmentTags = sequelize.define(
+  "DevelopmentTags",
+  {},
+  { timestamps: false, tableName: "development_tags" }
+);
+
+// Определение связей
+
 Role.hasMany(User, { foreignKey: "roleId" });
 User.belongsTo(Role, { foreignKey: "roleId" });
+
+User.hasMany(Development, { foreignKey: "userId", as: "developments" });
+Development.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+User.hasMany(DownloadHistory, { foreignKey: "userId", as: "downloads" });
+DownloadHistory.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+Category.hasMany(Development, { foreignKey: "categoryId", as: "developments" });
+Development.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
+
+// Many-to-Many между Development и Tag
+Development.belongsToMany(Tag, {
+  through: DevelopmentTags,
+  foreignKey: "developmentId",
+  as: "tags",
+});
+Tag.belongsToMany(Development, {
+  through: DevelopmentTags,
+  foreignKey: "tagId",
+  as: "developments",
+});
+
+// Profile
+User.hasOne(Profile, { foreignKey: "userId", as: "profile" });
+Profile.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+// DownloadHistory
+Profile.hasMany(DownloadHistory, {
+  foreignKey: "userId",
+  as: "downloadHistory",
+});
+DownloadHistory.belongsTo(Profile, { foreignKey: "userId", as: "profile" });
+Development.hasMany(DownloadHistory, {
+  foreignKey: "developmentId",
+  as: "downloads",
+});
+DownloadHistory.belongsTo(Development, {
+  foreignKey: "developmentId",
+  as: "development",
+});
 
 // Синхронизация базы данных и создание админа при первом запуске
 sequelize
@@ -169,7 +374,7 @@ app.get("/", (req, res) => {
       res.redirect("/profile");
     }
   } else {
-    res.redirect("/index");
+    res.redirect("/login");
   }
 });
 
@@ -186,16 +391,6 @@ app.get("/catalog", async (req, res) => {
 // Роут для страницы о нас
 app.get("/about_us", async (req, res) => {
   res.render("about_us", { error: null });
-});
-
-// Роут для страницы карточки товара
-app.get("/card", async (req, res) => {
-  res.render("card", { error: null });
-});
-
-// Роут для страницы загрузки разработок
-app.get("/new", async (req, res) => {
-  res.render("new", { error: null });
 });
 
 // Роут для страницы регистрации
@@ -267,7 +462,6 @@ app.post("/login", async (req, res) => {
     res.render("login", { error: "Ошибка входа" });
   }
 });
-
 // Роут для страницы профиля
 app.get("/profile", isAuthenticated, (req, res) => {
   res.render("profile", { user: req.session.user });

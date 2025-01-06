@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>разработка</title>
+</head>
+<body>
+    <form method="POST" action="/admin/developments/add" enctype="multipart/form-data">
+        <div>
+          <label for="title">Название:</label>
+          <input type="text" id="title" name="title" required><br>
+          </div>
+          <div>
+              <label for="description">Описание:</label>
+              <textarea id="description" name="description" rows="4" cols="50"></textarea><br>
+          </div>
+          <div>
+              <label for="file_path">Файл разработки:</label>
+              <input type="file" id="file_path" name="file_path" accept=".pdf,.docx,.pptx,.mp4,.jpg,.jpeg,.png" required><br>
+          </div>
+          <div>
+              <label for="preview">Превью:</label>
+              <input type="file" id="preview" name="preview" accept=".jpg,.jpeg,.png" required><br>
+          </div>
+          <div>
+              <label for="categoryId">Категория:</label>
+              <select name="categoryId" id="categoryId" required>
+                  <% categories.forEach(category => { %>
+                  <option value="<%= category.id %>"><%= category.name %></option>
+                  <% }); %>
+              </select>
+          </div>
+          <div>
+              <label for="tags">Теги:</label>
+               <select name="tags" id="tags" multiple required>
+                   <% tags.forEach(tag => { %>
+                   <option value="<%= tag.id %>"><%= tag.name %></option>
+                   <% }); %>
+               </select>
+          </div>
+      
+          <button type="submit">Добавить</button>
+      </form>
+</body>
+</html>

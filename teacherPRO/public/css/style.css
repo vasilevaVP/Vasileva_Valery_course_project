@@ -1,0 +1,826 @@
+:root {
+  --fiol: rgb(120, 100, 201);
+  --yellow: #ffce66;
+  --blue: #5b8dc8;
+  --text: #000000;
+  --h2-color: #200e49;
+  --h1: 57px TraktorMoodFont;
+  --h2: 600 40px Geologica;
+  --p: 200 20px Geologica;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  background-color: #eeeadf;
+}
+
+/*Шапка*/
+header {
+  width: 1180px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  margin-top: 45px;
+}
+
+.nav ul {
+  display: flex;
+  gap: 57px;
+  font: 400 20px Geologica;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: #4c3b91;
+  cursor: pointer;
+}
+
+header button {
+  width: 223px;
+  height: 45px;
+  border-radius: 10px;
+  border: none;
+  font: 400 20px Geologica;
+  background-color: var(--fiol);
+  color: white;
+  cursor: pointer;
+}
+
+header button:hover {
+  background: rgb(182, 165, 248);
+  background: linear-gradient(
+    90deg,
+    rgba(182, 165, 248, 1) 0%,
+    rgba(15, 31, 152, 1) 100%
+  );
+}
+/*Подвал*/
+footer {
+  background-color: var(--fiol);
+  font: 200 20px Geologica;
+  padding: 40px;
+  color: white;
+}
+
+.foot {
+  margin: 0 auto;
+  width: 1180px;
+}
+
+.two {
+  width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.question p,
+.coop p {
+  margin: 29px 0 10px 0;
+  padding: 0;
+  font-weight: 300;
+}
+
+.question {
+  margin-bottom: 27px;
+}
+
+.navi li,
+.navi2 li {
+  list-style-type: none;
+  margin-bottom: 20px;
+  font-weight: 200;
+}
+.navi a {
+  color: white;
+}
+.nn {
+  display: flex;
+  gap: 40px;
+}
+
+.three img {
+  margin-top: 143px;
+}
+
+/*Главная страница*/
+section {
+  width: 1180px;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+.slider {
+  width: 1000px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+.slide {
+  width: 1000px;
+  height: 555px;
+  background-size: cover;
+  align-items: center;
+}
+.arrow {
+  position: absolute;
+  top: 50%;
+  background-color: rgb(120, 100, 201, 0.2);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 20px 10px;
+  cursor: pointer;
+}
+
+.arrow.prev {
+  left: 120px;
+}
+
+.arrow.next {
+  right: 120px;
+}
+
+.pro {
+  width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  font: var(--p);
+  margin-bottom: 200px;
+}
+
+.pro1 {
+  text-align: center;
+  width: 350px;
+}
+
+.pro1 h3 {
+  font-weight: 600;
+  margin: 20px 0 15px 0;
+}
+
+h2 b {
+  color: #9785e2;
+}
+
+.papka {
+  width: 1180px;
+  height: 486px;
+  margin: 0 auto;
+  background-image: url(../img/papkaimg.png);
+  background-size: cover;
+}
+
+.txtblock {
+  position: relative;
+  width: 547px;
+  top: 127px;
+  left: 532px;
+}
+
+.txtblock h3 {
+  font: 600 24px Geologica;
+  margin-bottom: 30px;
+}
+.txtblock p {
+  width: 547px;
+  font: 200 20px/150% Geologica;
+  color: #4f4258;
+  margin-bottom: 10px;
+}
+
+.txtblock button {
+  width: 259px;
+  height: 59px;
+  padding: 20px 40px;
+  border: none;
+  border-radius: 10px;
+  font: 400 16px Geologica;
+  color: #4f4258;
+  background-color: #fefefe;
+  margin-top: 40px;
+  cursor: pointer;
+}
+.txtblock button:hover {
+  background-color: #fff79d;
+  transition: 300ms;
+}
+.pcards {
+  width: 1180px;
+  margin: 0 auto;
+  margin-bottom: 200px;
+}
+.pcard {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+.pcards img {
+  width: 380px;
+  height: 189px;
+}
+
+section5 .sub {
+  width: 1180px;
+  margin: 0 auto;
+  text-align: center;
+}
+.sub .form {
+  margin: 0 auto;
+  width: 460px;
+  background-color: #fefefe;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 12px;
+  margin-top: 60px;
+}
+
+.form input {
+  width: 250px;
+  height: 40px;
+  border-radius: 5px;
+  border: solid 2px #dfe4ea;
+  padding: 3px 10px;
+  font: 200 16px Geologica;
+}
+
+input::-webkit-input-placeholder {
+  font: 100 16px Geologica;
+  color: #9ca3af;
+}
+
+.form button {
+  width: 161px;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--blue);
+  font: 300 16px Geologica;
+  color: white;
+}
+.form button:hover {
+  background-color: #3c6ea7;
+  transition: 300ms;
+}
+
+section5 h2 {
+  margin-bottom: 20px;
+}
+.sub p {
+  margin: 0 auto;
+  text-align: center;
+  width: 659px;
+  font: var(--p);
+}
+
+.user {
+  width: 1180px;
+  margin: 0 auto;
+}
+.imguser {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plan {
+  margin-bottom: 300px;
+}
+.urok {
+  width: 976px;
+  margin: 0 auto;
+  font: var(--p);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid;
+  border-color: var(--fiol);
+  margin-bottom: 40px;
+}
+
+.tema p {
+  font-weight: 400;
+}
+.tema .pred {
+  color: #878787;
+  font-weight: 200;
+}
+.eye {
+  color: #bcbcbc;
+  font-weight: 300;
+  font-size: 16px;
+}
+/*Страница О нас*/
+
+section8 .banner {
+  width: 1180px;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  margin-top: 90px;
+}
+
+section9 .history {
+  width: 1180px;
+  margin: 0 auto;
+}
+
+h2 {
+  font: var(--h2);
+  text-align: center;
+  color: var(--h2-color);
+  margin: 200px 0 80px 0;
+}
+
+.stor1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding-left: 35px;
+  border-radius: 10px;
+  margin-bottom: 150px;
+}
+
+.stor2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding-right: 35px;
+  border-radius: 10px;
+  margin-bottom: 150px;
+}
+
+.text {
+  width: 545px;
+  font: var(--p);
+  color: var(--text);
+}
+
+.text p {
+  margin-bottom: 20px;
+}
+
+section10 .cards {
+  margin-bottom: 160px;
+}
+
+.card1 {
+  width: 290px;
+  height: 230px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px 73px 40px 73px;
+  box-shadow: 1px 4px 17px -6px rgba(34, 60, 80, 0.2);
+}
+
+.cards h3 {
+  font: 500 24px Geologica;
+  margin: 20px 0 14px 0;
+}
+
+.cards p {
+  font: 400 16px/152% Geologica;
+  color: #637381;
+}
+
+.cr {
+  width: 905px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  margin-bottom: 40px;
+}
+
+section11 {
+  width: 1180px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  margin-bottom: 300px;
+}
+
+.m {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.txt h2 {
+  font: var(--h2);
+  color: var(--h2-color);
+  text-align: left;
+  margin: 0 0 15px 0;
+}
+
+.txt p {
+  font: 200 28px Geologica;
+  color: var(--text);
+  text-align: left;
+  margin-bottom: 50px;
+}
+
+.m p {
+  font: 400 20px Geologica;
+  color: var(--text);
+  text-align: left;
+  margin: 0;
+}
+
+/*Каталог*/
+section12 .banner2 {
+  width: 1180px;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  margin-top: 80px;
+}
+.banner2 img {
+  border-radius: 10px;
+}
+
+.filtr {
+  display: flex;
+  margin-top: 35px;
+  justify-content: space-between;
+}
+
+.forma {
+  width: 1180px;
+  height: 163px;
+  margin: 0 auto;
+}
+
+.forma form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.forma input {
+  width: 1300px;
+  height: 62px;
+  border: none;
+  border-radius: 0 10px 10px 0;
+  outline: none;
+  background: white;
+  color: #121212;
+  font: var(--p);
+  padding: 0 0 0 10px;
+  display: flex;
+  align-items: center;
+}
+
+.forma ::placeholder {
+  font: var(--p);
+  color: #c2c2c2;
+}
+
+.subs button {
+  width: 42px;
+  height: 62px;
+  border: none;
+  background: white;
+  border-radius: 10px 0 0 10px;
+  cursor: pointer;
+  padding: 11px 10px 10px 20px;
+}
+
+.ooo {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.ooo button {
+  display: inline;
+  padding: 12px 30px 12px 30px;
+  border-radius: 20px;
+  border: none;
+  font: var(--p);
+}
+
+.ooo select {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  font: var(--p);
+  align-items: center;
+  background-color: white;
+  color: #bcbcbc;
+}
+
+.naprav img {
+  margin-left: 10px;
+}
+section13 h2 {
+  margin-top: 80px;
+}
+.catalog {
+  width: 1180px;
+  margin: 0 auto;
+  margin-top: 80px;
+  font-family: Geologica;
+  margin-bottom: 300px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.cardct a {
+  text-decoration: none;
+  color: var(--text);
+}
+.cardct {
+  width: 380px;
+}
+
+.teg {
+  display: flex;
+}
+.title {
+  font: 600 20px Geologica;
+  margin: 20px 0;
+}
+.teg p {
+  font: 300 15px Geologica;
+  background-color: white;
+  padding: 10px 10px;
+  border-radius: 10px;
+  margin-right: 15px;
+}
+.cardct img {
+  border-radius: 10px;
+}
+.ctbutton {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+.bs button {
+  width: 180px;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  font: 300 16px Geologica;
+  background-color: var(--blue);
+  color: white;
+  cursor: pointer;
+}
+.bp button {
+  width: 180px;
+  height: 50px;
+  border: solid 2px;
+  border-color: var(--blue);
+  border-radius: 10px;
+  font: 400 16px Geologica;
+  background-color: #eeeadf;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+/*Ваши разработки*/
+section20 form {
+  width: 1180px;
+  margin: 0 auto;
+}
+
+section20 h2 {
+  margin: 80px 0 150px 0;
+}
+section20 h3 {
+  font: 400 24px Geologica;
+  color: #7a66c9;
+  margin-bottom: 30px;
+}
+
+section20 [type="text"] {
+  width: 1150px;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 15px;
+  font: var(--p);
+  margin-bottom: 60px;
+}
+
+.checkbox-group {
+  width: 971px;
+  margin-bottom: 60px;
+  display: flex;
+  justify-content: space-between;
+}
+.checkbox-group p {
+  font: var(--p);
+  margin-bottom: 15px;
+}
+
+.fl {
+  display: flex;
+  width: 1180px;
+  height: 277px;
+  background-color: white;
+  align-items: center;
+  justify-content: center;
+  border: solid 2px #9ca3af;
+  border-style: dashed;
+  margin-bottom: 60px;
+}
+::file-selector-button {
+  height: 60px;
+  border: none;
+  background: var(--blue);
+  padding: 20px 20px;
+  border-radius: 10px;
+  padding: 0 30px;
+  color: #fff;
+  font: 400 16px Geologica;
+  cursor: pointer;
+}
+
+#editor {
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+  min-height: 150px;
+  border-radius: 0 0 10px 10px;
+  font: var(--p);
+  margin-bottom: 80px;
+}
+
+.toolbar {
+  background-color: #bacce0;
+  padding: 10px 20px;
+  border-radius: 10px 10px 0 0;
+}
+
+.toolbar button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 10px;
+  background-color: #bacce0;
+  cursor: pointer;
+}
+
+.toolbar button:hover {
+  background-color: #d5e4f6;
+}
+.toolbar img {
+  width: 30px;
+}
+
+.sb p {
+  font: var(--p);
+  margin-bottom: 30px;
+}
+
+.sb button {
+  width: 230px;
+  height: 60px;
+  border: none;
+  background: var(--blue);
+  padding: 20px 20px;
+  border-radius: 10px;
+  padding: 0 30px;
+  color: #fff;
+  font: 400 20px Geologica;
+  cursor: pointer;
+  margin-bottom: 300px;
+}
+
+.sb button:hover {
+  background: var(--blue);
+  background: linear-gradient(90deg, #5b8dc8 0%, rgba(15, 31, 152, 1) 100%);
+}
+
+/*Карточка ресурса*/
+
+section21 .resurs {
+  width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  gap: 120px;
+  align-items: center;
+  font: var(--p);
+  margin-top: 80px;
+}
+
+.resurs .teg {
+  margin: 48px 0 48px 0;
+}
+.bu {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 28px;
+}
+.bu button {
+  width: 230px;
+  height: 60px;
+  border: none;
+  background: var(--blue);
+  padding: 20px 20px;
+  border-radius: 10px;
+  padding: 0 30px;
+  color: #fff;
+  font: 400 20px Geologica;
+  cursor: pointer;
+}
+
+.bu button:hover {
+  background: var(--blue);
+  background: linear-gradient(90deg, #5b8dc8 0%, rgba(15, 31, 152, 1) 100%);
+}
+
+.opis {
+  width: 1064px;
+  margin: 0 auto;
+  margin-top: 70px;
+  margin-bottom: 270px;
+  font: var(--p);
+}
+.opis p {
+  margin-bottom: 30px;
+}
+section22 .vashe {
+  width: 1180px;
+  margin: 0 auto;
+  font-family: Geologica;
+  margin-top: 80px;
+}
+.users {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vklad {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+.users p {
+  font-size: 24px;
+}
+.aaa p {
+  font-size: 20px;
+  color: #9ca3af;
+  font-weight: 200;
+}
+.qwe {
+  margin: 50px 0 200px 0;
+}
+.zagruz {
+  margin-bottom: 250px;
+  text-align: center;
+}
+.zagruz p {
+  font: 300 24px Geologica;
+  font-size: 20px;
+}
+.zagruz button {
+  width: 190px;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 30px;
+  font: 300 16px Geologica;
+  background-color: var(--blue);
+  color: white;
+  cursor: pointer;
+}
+
+.fiolet {
+  font-weight: 600;
+  color: var(--fiol);
+}
+.statist {
+  width: 820px;
+  height: 351px;
+  text-align: center;
+  border: solid 2px #bdc2ca;
+  margin: 0 auto;
+  font-size: 20px;
+  font-weight: 200;
+  color: #9ca3af;
+  margin-bottom: 300px;
+}
+.statist p {
+  width: 442px;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 150.5px;
+}
