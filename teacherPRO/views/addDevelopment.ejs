@@ -30,22 +30,24 @@
                 <a href="/catalog">
                     <li>Каталог</li>
                 </a>
-                <a href="/register">
-                    <li>Войти</li>
-                </a>
             </ul>
         </div>
-        <form action="/addDevelopmen">
+        <div class="navbt">
+        <a href="/login">
+            <img src="./img/lk.svg" alt="">
+        </a>
+        <form action="/addDevelopment">
             <button>+ Новый материал</button>
-        </form>
+        </form></div>
     </header>
     <section20>
         <h2>Поделитесь своей образовательной разработкой </h2>
+         <form method="post" action="/addDevelopment" enctype="multipart/form-data">
         <form>
             <h3>Название</h3>
             <input type="text" required placeholder="Например, презентация на тему «История России» для 5 класса">
 
-            <h3>Укажите тип</h3>
+            <h3>Укажите категорию</h3>
             <div class="checkbox-group">
                 <div class="chec">
                     <p><input type="checkbox" id="presentations" name="materials">Презентации</p>

@@ -5,11 +5,12 @@ const { Sequelize, DataTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 const app = express();
 const port = 3000;
 
-// Настройка базы данных SQLite
+// Настройка базы данных SQLiteF
 const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: "db.sqlite",
@@ -364,6 +365,7 @@ function hasRole(roleName) {
     }
   };
 }
+
 // Маршруты
 
 // Главная страница
@@ -375,7 +377,7 @@ app.get("/", (req, res) => {
       res.redirect("/profile");
     }
   } else {
-    res.redirect("/login");
+    res.redirect("/index");
   }
 });
 
@@ -399,12 +401,70 @@ app.get("/register", async (req, res) => {
   res.render("register", { error: null });
 });
 
-// Админ панель
-app.get("/admin", isAuthenticated, hasRole("admin"), async (req, res) => {
-  res.render("admin", { user: req.session.user });
+// Роут для страницы регистрации
+app.get("/addDevelopment", async (req, res) => {
+  res.render("addDevelopment", { error: null });
 });
 
-//  настройка multer для обработки загрузки файлов
+// Роут для получения разработок пользователя
+app.get("/user/developments/:userId", isAuthenticated, async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const developments = await Development.findAll({
+      where: { userId },
+    });
+    res.json(developments);
+  } catch (error) {
+    console.error("Ошибка при получении разработок пользователя:", error);
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
+// Роут для получения истории скачиваний пользователя
+app.get("/user/downloads/:userId", isAuthenticated, async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const downloads = await DownloadHistory.findAll({
+      where: { userId },
+      include: [{ model: Development, as: "development" }],
+    });
+    res.json(downloads);
+  } catch (error) {
+    console.error("Ошибка при получении истории скачиваний:", error);
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
+// Админ панель
+app.get("/admin", isAuthenticated, hasRole("admin"), async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ["id", "fullName", "email"],
+      order: [["fullName", "ASC"]],
+      where: {
+        "$Role.name$": {
+          [Sequelize.Op.not]: "admin",
+        },
+      },
+      include: [
+        {
+          model: Role,
+          required: true,
+          attributes: [],
+        },
+      ],
+    });
+    const userCount = users.length;
+    res.render("admin", { user: req.session.user, users, userCount });
+  } catch (error) {
+    console.error("Ошибка получения списка пользователей:", error);
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
+// Настройка multer для обработки загрузки файлов
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "public", "uploads"));
@@ -420,24 +480,16 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|pdf|docx|pptx|mp4/;
-  const mimeType = allowedTypes.test(file.mimetype);
-  const extName = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  );
-  if (mimeType && extName) {
-    return cb(null, true);
-  } else {
-    cb("Ошибка: Неправильный формат файла");
+  if (!allowedTypes.test(file.mimetype)) {
+    return cb("Ошибка: Неправильный тип файла.", false);
   }
+  if (file.size > 10 * 1024 * 1024) {
+    return cb("Ошибка: Файл слишком большой. Максимальный размер - 10 МБ.");
+  }
+  cb(null, true);
 };
 
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit for all files
-  },
-});
+const uploads = multer({ storage: storage, fileFilter: fileFilter });
 
 // AJAX endpoints для добавления
 app.post(
@@ -496,7 +548,7 @@ app.post(
   "/admin/add/development",
   isAuthenticated,
   hasRole("admin"),
-  upload.fields([
+  uploads.fields([
     { name: "preview", maxCount: 1 },
     { name: "file_path", maxCount: 1 },
   ]),
@@ -631,10 +683,31 @@ app.get("/profile", isAuthenticated, (req, res) => {
 });
 
 // Роут для страницы админа
-app.get("/admin", isAuthenticated, hasRole("admin"), (req, res) => {
-  res.render("admin", { user: req.session.user });
+app.get("/admin", isAuthenticated, hasRole("admin"), async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ["id", "fullName", "email"],
+      order: [["fullName", "ASC"]],
+      where: {
+        "$Role.name$": {
+          [Sequelize.Op.not]: "admin",
+        },
+      },
+      include: [
+        {
+          model: Role,
+          required: true,
+          attributes: [],
+        },
+      ],
+    });
+    const userCount = users.length;
+    res.render("admin", { user: req.session.user, users, userCount });
+  } catch (error) {
+    console.error("Ошибка получения списка пользователей:", error);
+    res.status(500).send("Ошибка сервера");
+  }
 });
-
 // Роут для выхода
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {

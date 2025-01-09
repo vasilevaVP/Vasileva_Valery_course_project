@@ -28,14 +28,15 @@
                 <a href="/catalog">
                     <li>Каталог</li>
                 </a>
-                <a href="/register">
-                    <li>Войти</li>
-                </a>
             </ul>
         </div>
-        <form action="/addDevelopmen">
+        <div class="navbt">
+        <a href="/login">
+            <img src="./img/lk.svg" alt="">
+        </a>
+        <form action="/addDevelopment">
             <button>+ Новый материал</button>
-        </form>
+        </form></div>
     </header>
     <section12>
         <div class="banner2">
@@ -52,21 +53,7 @@
             <div class="filtr">
                 <div class="ooo">
                     <select class="naprav" id="nap">
-                        <option>Класс</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                        <option>11</option>
-                    </select>
-                    <select class="naprav" id="nap">
-                        <option>Предмет</option>
+                        <option>Категории</option>
                         <option>Русский язык</option>
                         <option>История</option>
                         <option>Информатика</option>
@@ -77,7 +64,7 @@
                         <option>Литература</option>
                     </select>
                     <select class="naprav" id="nap">
-                        <option>Формат</option>
+                        <option>Теги</option>
                         <option>Презентации</option>
                         <option>Конспекты</option>
                         <option>Чек-листы</option>
@@ -301,6 +288,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 }); 
+
+
     </script>
     
     <footer>

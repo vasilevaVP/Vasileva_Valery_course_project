@@ -32,6 +32,11 @@ header {
   font: 400 20px Geologica;
   list-style: none;
 }
+.navbt {
+  display: flex;
+  gap: 20px;
+  font: 400 20px Geologica;
+}
 
 a {
   text-decoration: none;

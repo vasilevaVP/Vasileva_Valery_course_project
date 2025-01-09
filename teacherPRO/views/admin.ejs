@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Админ панель</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://db.onlinewebfonts.com/c/4674c29fede917b1695c03e730aa503c?family=TraktorMoodFont"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/rest.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Админ-панель</title>
+    <link rel="icon" href="./img/iconlogo.ico">
     <style>
         body {
-            font-family: sans-serif;
+            font-family: Geologica;
             background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
@@ -29,16 +40,22 @@
             border-radius: 5px;
         }
 
-        h1 {
+        .admin-container h1 {
+            font: 600 40px Geologica;
             text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+        .admin-container h2 {
+            font: 500 32px Geologica;
+            text-align: center;
+            margin: 0;
             margin-bottom: 20px;
             color: #333;
         }
-        h2 {
-            margin-bottom: 15px;
-        }
 
-        p {
+        .admin-container p {
+            font: 300 20px Geologica;
             font-size: 1.1em;
             color: #555;
             margin-bottom: 15px;
@@ -67,7 +84,7 @@
             display: flex;
             justify-content: flex-end;
         }
-         button {
+        .button-container button {
             padding: 10px 15px;
             background-color: #007bff;
             color: white;
@@ -77,7 +94,7 @@
             transition: background-color 0.3s;
         }
 
-        button:hover {
+        .button-container button:hover {
             background-color: #0056b3;
         }
         .message {
@@ -97,7 +114,8 @@
         .close {
             color: #606060;
             float: left;
-            font: 200 14px Geologica;
+            font: 300 15px Geologica;
+            margin-top: 20px;
         }
         .close:hover,
         .close:focus {
@@ -105,15 +123,34 @@
             text-decoration: none;
             cursor: pointer;
         }
-         .preview-container {
-           margin-top: 10px;
+        .preview-container {
+            margin-top: 10px;
             max-width: 200px;
-             max-height: 200px;
-         }
-       .preview-container img{
-        max-width: 200px;
-          max-height: 200px;
-         }
+            max-height: 200px;
+        }
+        .preview-container img{
+            max-width: 200px;
+            max-height: 200px;
+        }
+        .user-list {
+            width: 80%;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+        }
+
+        .user-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-list th,
+        .user-list td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+         
     </style>
 </head>
 <body>
@@ -126,6 +163,7 @@
         <p>Вы не авторизованы.</p>
         <p><a href="/login">Авторизоваться</a></p>
         <% } %>
+       
         <div class="form-section">
             <h2>Добавить тег</h2>
             <div id="tagMessage"></div>
@@ -185,18 +223,41 @@
                 </div>
             </form>
         </div>
+        <div class="form-section">
+            <h2>Список пользователей</h2>
+               <p>Всего пользователей: <%= userCount %></p>
+                 <div class="user-list">
+                     <table>
+                          <tr>
+                               <th>ID</th>
+                              <th>ФИО</th>
+                              <th>Почта</th>
+                          </tr>
+                       <% if(users) {
+                         users.forEach(user => { %>
+                        <tr>
+                            <td><%= user.id %></td>
+                             <td><%= user.fullName %></td>
+                           <td><%= user.email %></td>
+                         </tr>
+                        <% });
+                           }
+                        %>
+                    </table>
+                  </div>
+             </div>
+  
     </div>
-    <script>
-         const categorySelect = document.getElementById('developmentCategoryId');
-         const tagCheckboxes = document.getElementById('tagCheckboxes');
-         const previewImg = document.getElementById('preview-img');
-
+     <script>
+        const categorySelect = document.getElementById('developmentCategoryId');
+        const tagCheckboxes = document.getElementById('tagCheckboxes');
+        const previewImg = document.getElementById('preview-img');
 
         async function fetchCategories() {
-            try {
+           try {
                 const response = await fetch('/admin/categories');
                 if (!response.ok) {
-                    throw new Error('Failed to fetch categories');
+                  throw new Error('Failed to fetch categories');
                 }
                 const categories = await response.json();
                  categories.forEach(category => {
@@ -210,10 +271,10 @@
             }
         }
 
-         async function fetchTags() {
-              try {
+        async function fetchTags() {
+            try {
                 const response = await fetch('/admin/tags');
-                 if (!response.ok) {
+                if (!response.ok) {
                     throw new Error('Failed to fetch tags');
                }
                const tags = await response.json();

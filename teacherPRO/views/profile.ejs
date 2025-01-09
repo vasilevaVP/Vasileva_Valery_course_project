@@ -1,64 +1,147 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Профиль</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://db.onlinewebfonts.com/c/4674c29fede917b1695c03e730aa503c?family=TraktorMoodFont"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/rest.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>УчительPRO: Профиль</title>
+    <link rel="icon" href="./img/iconlogo.ico">
+
      <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
         .profile-container {
-            background-color: #fff;
+            margin: 0 auto;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            width: 400px;
+            width: 1118px;
+            margin-top: 80px;
             text-align: center;
         }
 
-
-       h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
+        .profile-container h2{
+            font: 600 40px Geologica;
+            margin: 0 0 30px 0;
+        }
+        .profile-container p{
+            font: 200 20px Geologica;
+        }
+        .tabs{
+            margin: 20px 0 30px 0;
         }
 
-        p {
-            font-size: 1.1em;
-            color: #555;
-            margin-bottom: 15px;
+        .tab {
+            display: none;
         }
-
-
-         a {
-          text-decoration: none;
-          color: #007bff;
-          transition: color 0.3s;
+        .tab.active {
+            display: block;
         }
-
-        a:hover {
-            color: #0056b3;
+        .tabs button {
+            margin: 0 10px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
         }
-
     </style>
 </head>
 <body>
+    <header>
+        <div class="logo"><a href="/index"><img src="./img/logo1.svg" alt=""></div></a>
+        <div class="nav">
+            <ul>
+                <a href="/index">
+                    <li>Главная</li>
+                </a>
+                <a href="/about_us">
+                    <li>О нас</li>
+                </a>
+                <a href="/catalog">
+                    <li>Каталог</li>
+                </a>
+            </ul>
+        </div>
+        <div class="navbt">
+        <a href="/login">
+            <img src="./img/lk.svg" alt="">
+        </a>
+        <form action="/addDevelopment">
+            <button>+ Новый материал</button>
+        </form></div>
+    </header>
 <div class="profile-container">
-    <h1>Личный кабинет</h1>
+    <h2>Личный кабинет</h2>
     <% if (user) { %>
         <p>Добро пожаловать, <%= user.fullName %>!</p>
-        <p>Ваш email: <%= user.email %></p>
-        <a href="/logout">Выйти</a>
+        <div class="tabs">
+            <button id="developmentsTabBtn">Мои разработки</button>
+            <button id="downloadsTabBtn">История скачиваний</button>
+        </div>
+    
+        <div id="developmentsTab" class="tab active"></div>
+        <div id="downloadsTab" class="tab"></div>
+
+        <p><a href="/logout">Выйти</a></p>
     <% } else { %>
         <p>Вы не авторизованы.</p>
         <p><a href="/login">Авторизоваться</a></p>
     <% } %>
 </div>
+
+<script>
+    const userId = `<%= user ? user.id : null %>`;
+
+    document.getElementById('developmentsTabBtn').addEventListener('click', () => loadDevelopments(userId));
+    document.getElementById('downloadsTabBtn').addEventListener('click', () => loadDownloads(userId));
+
+    async function loadDevelopments(userId) {
+        const developmentsList = document.getElementById('developmentsTab');
+        developmentsList.innerHTML = ''; // очищаем
+
+        const response = await fetch(`/user/developments/${userId}`);
+        const developments = await response.json();
+
+        if (developments.length === 0) {
+            developmentsList.innerHTML = `<p>У вас пока нет загрузок, <a href="/addDevelopment">загрузите первую разработку</a>.</p>`;
+        } else {
+            developments.forEach(dev => {
+                developmentsList.innerHTML += `<div>${dev.title}</div>`;
+            });
+        }
+        showTab('developmentsTab');
+    }
+
+    async function loadDownloads(userId) {
+        const downloadsList = document.getElementById('downloadsTab');
+        downloadsList.innerHTML = ''; // очищаем
+
+        const response = await fetch(`/user/downloads/${userId}`);
+        const downloads = await response.json();
+
+        if (downloads.length === 0) {
+            downloadsList.innerHTML = `<p>Пока нет скачиваний.</p>`;
+        } else {
+            downloads.forEach(download => {
+                downloadsList.innerHTML += `<div>Скачано: ${download.development.title} (Дата: ${new Date(download.download_date).toLocaleDateString()})</div>`;
+            });
+        }
+        showTab('downloadsTab');
+    }
+
+    function showTab(tabId) {
+        document.querySelectorAll(".tab").forEach(tab => {
+            tab.classList.remove("active");
+        });
+        document.getElementById(tabId).classList.add("active");
+    }
+
+    // При загрузке страницы по умолчанию загружаем разработки
+    if (userId) {
+        loadDevelopments(userId);
+    }
+</script>
 </body>
 </html>
