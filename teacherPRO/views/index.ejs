@@ -34,12 +34,19 @@
             </ul>
         </div>
         <div class="navbt">
-        <a href="/login">
-            <img src="./img/lk.svg" alt="">
-        </a>
-        <form action="/addDevelopment">
-            <button>+ Новый материал</button>
-        </form></div>
+         <% if (user) { %>
+             <a href="/profile">
+                <img src="./img/lk.svg" alt="">
+            </a>
+        <% } else { %>
+            <a href="/login">
+                <li>Авторизация/Регистрация</li> 
+            </a>
+        <% } %>
+            <form action="/addDevelopment">
+                <button>+ Новый материал</button>
+            </form>
+        </div>
     </header>
     <section>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

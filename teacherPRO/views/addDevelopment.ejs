@@ -33,12 +33,19 @@
             </ul>
         </div>
         <div class="navbt">
-        <a href="/login">
-            <img src="./img/lk.svg" alt="">
-        </a>
-        <form action="/addDevelopment">
-            <button>+ Новый материал</button>
-        </form></div>
+         <% if (user) { %>
+             <a href="/profile">
+                <img src="./img/lk.svg" alt="">
+            </a>
+        <% } else { %>
+            <a href="/login">
+                <li>Авторизация/Регистрация</li> 
+            </a>
+        <% } %>
+            <form action="/addDevelopment">
+                <button>+ Новый материал</button>
+            </form>
+        </div>
     </header>
     <section20>
         <h2>Поделитесь своей образовательной разработкой </h2>
@@ -50,26 +57,25 @@
             <h3>Укажите категорию</h3>
             <div class="checkbox-group">
                 <div class="chec">
-                    <p><input type="checkbox" id="presentations" name="materials">Презентации</p>
-                    <p><input type="checkbox" id="notes" name="materials">Конспекты и статьи</p>
-                    <p><input type="checkbox" id="audio" name="materials">Аудио</p>
+                        <select id="category" name="category">
+                          <option value="presentation">Презентация</option>
+                          <option value="presentation">Конспект</option>
+                          <option value="presentation">Лекция</option>
+                          <option value="presentation">Тесты</option>
+                          <option value="presentation">Памятки</option>
+                        </select>
                 </div>
-                <div class="chec">
-                    <p><input type="checkbox" id="video" name="materials">Видео</p>
-                    <p><input type="checkbox" id="practical" name="materials">Практические работы</p>
-                    <p><input type="checkbox" id="visual" name="materials">Наглядные материалы</p>
-                </div>
-                <div class="chec">
-                    <p> <input type="checkbox" id="checklists" name="materials">Чек-листы</p>
-                    <p> <input type="checkbox" id="lesson-plans" name="materials">Планы урока</p>
-                    <p> <input type="checkbox" id="course-complex" name="materials">Комплекс занятий</p>
-                </div>
+               
             </div>
 
-            <h3>Выберите файл</h3>
+            <h3>Выберите файл и обложку</h3>
+            <div class="download">
             <div class="fl">
                 <input type="file" required>
             </div>
+            <div class="fl">
+                <input type="file"  name="preview" accept=".jpg,.jpeg,.png" >
+            </div></div>
             <h3>Описание</h3>
             <div class="toolbar">
 

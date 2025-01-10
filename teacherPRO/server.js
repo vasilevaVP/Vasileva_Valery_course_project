@@ -336,7 +336,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(
   session({
     secret: "secret-key",
-    resave: false,
+    resave: true,
     saveUninitialized: false,
   })
 );
@@ -383,27 +383,32 @@ app.get("/", (req, res) => {
 
 // Роут для главной страницы
 app.get("/index", async (req, res) => {
-  res.render("index", { error: null });
+  res.render("index", { user: req.session.user });
 });
 
 // Роут для страницы каталога
 app.get("/catalog", async (req, res) => {
-  res.render("catalog", { error: null });
+  res.render("catalog", { user: req.session.user });
 });
 
 // Роут для страницы о нас
 app.get("/about_us", async (req, res) => {
-  res.render("about_us", { error: null });
+  res.render("about_us", { user: req.session.user });
 });
 
 // Роут для страницы регистрации
 app.get("/register", async (req, res) => {
-  res.render("register", { error: null });
+  res.render("register", { user: req.session.user, error: null });
 });
 
-// Роут для страницы регистрации
-app.get("/addDevelopment", async (req, res) => {
-  res.render("addDevelopment", { error: null });
+// Роут для страницы добавления разработки
+app.get("/addDevelopment", isAuthenticated, async (req, res) => {
+  res.render("addDevelopment", { user: req.session.user, error: null });
+});
+
+// Роут для страницы подробнее для разработки
+app.get("/card", isAuthenticated, async (req, res) => {
+  res.render("card", { user: req.session.user, error: null });
 });
 
 // Роут для получения разработок пользователя
@@ -463,7 +468,6 @@ app.get("/admin", isAuthenticated, hasRole("admin"), async (req, res) => {
     res.status(500).send("Ошибка сервера");
   }
 });
-
 // Настройка multer для обработки загрузки файлов
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -618,7 +622,10 @@ app.post("/register", async (req, res) => {
   const { fullName, email, password, confirmPassword } = req.body;
 
   if (password !== confirmPassword) {
-    return res.render("register", { error: "Пароли не совпадают" });
+    return res.render("register", {
+      user: req.session.user,
+      error: "Пароли не совпадают",
+    });
   }
   try {
     const role = await Role.findOne({ where: { name: "user" } });
@@ -641,13 +648,13 @@ app.post("/register", async (req, res) => {
       message = error.errors.map((err) => err.message).join(", ");
     }
     console.error("Ошибка регистрации:", error);
-    res.render("register", { error: message });
+    res.render("register", { user: req.session.user, error: message });
   }
 });
 
 // Роут для страницы авторизации
 app.get("/login", (req, res) => {
-  res.render("login", { error: null });
+  res.render("login", { user: req.session.user, error: null });
 });
 
 // Роут для обработки авторизации
@@ -670,44 +677,64 @@ app.post("/login", async (req, res) => {
         res.redirect("/profile");
       }
     } else {
-      res.render("login", { error: "Неверный email или пароль" });
+      res.render("login", {
+        user: req.session.user,
+        error: "Неверный email или пароль",
+      });
     }
   } catch (error) {
     console.error("Ошибка входа:", error);
-    res.render("login", { error: "Ошибка входа" });
+    res.render("login", { user: req.session.user, error: "Ошибка входа" });
   }
 });
+
 // Роут для страницы профиля
 app.get("/profile", isAuthenticated, (req, res) => {
   res.render("profile", { user: req.session.user });
 });
 
-// Роут для страницы админа
-app.get("/admin", isAuthenticated, hasRole("admin"), async (req, res) => {
+// Роут для страницы профиля
+app.get("/profile", isAuthenticated, async (req, res) => {
   try {
-    const users = await User.findAll({
-      attributes: ["id", "fullName", "email"],
-      order: [["fullName", "ASC"]],
-      where: {
-        "$Role.name$": {
-          [Sequelize.Op.not]: "admin",
-        },
-      },
+    const userId = req.session.user.id;
+    let profile = await Profile.findOne({ where: { userId } });
+    if (!profile) {
+      profile = await Profile.create({ userId });
+    }
+
+    const user = await User.findByPk(userId, {
       include: [
         {
-          model: Role,
-          required: true,
-          attributes: [],
+          model: Development,
+          as: "developments",
+          attributes: ["title", "description", "id"],
+        },
+        {
+          model: DownloadHistory,
+          as: "downloadHistory",
+          attributes: ["developmentId", "download_date"],
+          include: {
+            model: Development,
+            attributes: ["title"],
+          },
         },
       ],
     });
-    const userCount = users.length;
-    res.render("admin", { user: req.session.user, users, userCount });
+    if (!user) {
+      return res.status(404).send("Пользователь не найден");
+    }
+    res.render("profile", {
+      user: req.session.user,
+      profile: user.profile,
+      developments: user.developments,
+      downloads: user.downloadHistory,
+    });
   } catch (error) {
-    console.error("Ошибка получения списка пользователей:", error);
+    console.error("Ошибка получения профиля:", error);
     res.status(500).send("Ошибка сервера");
   }
 });
+
 // Роут для выхода
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {

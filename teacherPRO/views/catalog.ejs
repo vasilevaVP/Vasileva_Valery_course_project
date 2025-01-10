@@ -31,12 +31,19 @@
             </ul>
         </div>
         <div class="navbt">
-        <a href="/login">
-            <img src="./img/lk.svg" alt="">
-        </a>
-        <form action="/addDevelopment">
-            <button>+ Новый материал</button>
-        </form></div>
+         <% if (user) { %>
+             <a href="/profile">
+                <img src="./img/lk.svg" alt="">
+            </a>
+        <% } else { %>
+            <a href="/login">
+                <li>Авторизация/Регистрация</li> 
+            </a>
+        <% } %>
+            <form action="/addDevelopment">
+                <button>+ Новый материал</button>
+            </form>
+        </div>
     </header>
     <section12>
         <div class="banner2">
@@ -93,12 +100,12 @@
                     </div>
                     <div class="ctbutton">
                         <div class="bs">
-                            <form action="personal.html">
+                            <form action="">
                                 <button>Скачать</button>
                             </form>
                         </div>
                         <div class="bp">
-                            <form action="card.html">
+                            <form action="/card">
                                 <button>Подробнее</button>
                             </form>
                         </div>
@@ -114,12 +121,12 @@
                     </div>
                     <div class="ctbutton">
                         <div class="bs">
-                            <form action="personal.html">
+                            <form action="">
                                 <button>Скачать</button>
                             </form>
                         </div>
                         <div class="bp">
-                            <form action="card.html">
+                            <form action="/card">
                                 <button>Подробнее</button>
                             </form>
                         </div>
@@ -137,12 +144,12 @@
                     </div>
                     <div class="ctbutton">
                         <div class="bs">
-                            <form action="personal.html">
+                            <form action="">
                                 <button>Скачать</button>
                             </form>
                         </div>
                         <div class="bp">
-                            <form action="card.html">
+                            <form action="/card">
                                 <button>Подробнее</button>
                             </form>
                         </div>
@@ -160,12 +167,12 @@
                     </div>
                     <div class="ctbutton">
                         <div class="bs">
-                            <form action="personal.html">
+                            <form action="">
                                 <button>Скачать</button>
                             </form>
                         </div>
                         <div class="bp">
-                            <form action="card.html">
+                            <form action="/card">
                                 <button>Подробнее</button>
                             </form>
                         </div>
@@ -182,12 +189,12 @@
                     </div>
                     <div class="ctbutton">
                         <div class="bs">
-                            <form action="personal.html">
+                            <form action="">
                                 <button>Скачать</button>
                             </form>
                         </div>
                         <div class="bp">
-                            <form action="card.html">
+                            <form action="/card">
                                 <button>Подробнее</button>
                             </form>
                         </div>
@@ -205,12 +212,12 @@
                     </div>
                     <div class="ctbutton">
                         <div class="bs">
-                            <form action="personal.html">
+                            <form action="">
                                 <button>Скачать</button>
                             </form>
                         </div>
                         <div class="bp">
-                            <form action="card.html">
+                            <form action="/card">
                                 <button>Подробнее</button>
                             </form>
                         </div>

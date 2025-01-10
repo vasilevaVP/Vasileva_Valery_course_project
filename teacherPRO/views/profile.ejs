@@ -13,40 +13,6 @@
     <link rel="stylesheet" href="./css/style.css">
     <title>УчительPRO: Профиль</title>
     <link rel="icon" href="./img/iconlogo.ico">
-
-     <style>
-        .profile-container {
-            margin: 0 auto;
-            padding: 30px;
-            width: 1118px;
-            margin-top: 80px;
-            text-align: center;
-        }
-
-        .profile-container h2{
-            font: 600 40px Geologica;
-            margin: 0 0 30px 0;
-        }
-        .profile-container p{
-            font: 200 20px Geologica;
-        }
-        .tabs{
-            margin: 20px 0 30px 0;
-        }
-
-        .tab {
-            display: none;
-        }
-        .tab.active {
-            display: block;
-        }
-        .tabs button {
-            margin: 0 10px;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -65,17 +31,29 @@
             </ul>
         </div>
         <div class="navbt">
-        <a href="/login">
-            <img src="./img/lk.svg" alt="">
-        </a>
-        <form action="/addDevelopment">
-            <button>+ Новый материал</button>
-        </form></div>
+         <% if (user) { %>
+             <a href="/profile">
+                <img src="./img/lk.svg" alt="">
+            </a>
+        <% } else { %>
+            <a href="/login">
+                <li>Авторизация/Регистрация</li> 
+            </a>
+        <% } %>
+            <form action="/addDevelopment">
+                <button>+ Новый материал</button>
+            </form>
+        </div>
     </header>
 <div class="profile-container">
     <h2>Личный кабинет</h2>
     <% if (user) { %>
         <p>Добро пожаловать, <%= user.fullName %>!</p>
+        <p><a href="/logout">Выйти</a></p>
+    <% } else { %>
+        <p>Вы не авторизованы.</p>
+        <a href="/login"></a>
+    <% } %>
         <div class="tabs">
             <button id="developmentsTabBtn">Мои разработки</button>
             <button id="downloadsTabBtn">История скачиваний</button>
@@ -84,12 +62,51 @@
         <div id="developmentsTab" class="tab active"></div>
         <div id="downloadsTab" class="tab"></div>
 
-        <p><a href="/logout">Выйти</a></p>
-    <% } else { %>
-        <p>Вы не авторизованы.</p>
-        <p><a href="/login">Авторизоваться</a></p>
-    <% } %>
 </div>
+
+<footer>
+</div>
+<div class="two">
+    <div class="quecoop">
+        <img src="./img/logo2.svg" alt="">
+        <div class="question">
+            <p>По всем вопросам:</p>
+            <p>teacherpro@mail.ru</p>
+        </div>
+    </div>
+    <div class="nn">
+        <div class="navi">
+            <ul>
+                <a href="index.html">
+                    <li>Главная</li>
+                </a>
+                <a href="about_us.html">
+                    <li>О нас</li>
+                </a>
+                <a href="catalog.html">
+                    <li>Каталог</li>
+                </a>
+                <a href="personal.html">
+                    <li>Ваши разработки</li>
+                </a>
+            </ul>
+        </div>
+        <div class="navi2">
+            <ul>
+                <li>Поддержка</li>
+                <li>Вопросы</li>
+                <li>Документация</li>
+                <li>Сотрудничество</li>
+            </ul>
+        </div>
+    </div>
+    <div class="three">
+        <img src="./img/vk.svg" alt="">
+        <img src="./img/youtube.svg" alt="">
+        <img src="./img/telegram.svg" alt="">
+    </div>
+</div>
+</footer>
 
 <script>
     const userId = `<%= user ? user.id : null %>`;
@@ -122,7 +139,7 @@
         const downloads = await response.json();
 
         if (downloads.length === 0) {
-            downloadsList.innerHTML = `<p>Пока нет скачиваний.</p>`;
+            downloadsList.innerHTML = `<p>У вас пока нет скаченных разработок, <a href="/catalog">скачать первую разработку</a>.</p>`;
         } else {
             downloads.forEach(download => {
                 downloadsList.innerHTML += `<div>Скачано: ${download.development.title} (Дата: ${new Date(download.download_date).toLocaleDateString()})</div>`;
@@ -142,6 +159,7 @@
     if (userId) {
         loadDevelopments(userId);
     }
+
 </script>
 </body>
 </html>
