@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./css/style.css">
     <title>УчительPRO: Каталог</title>
     <link rel="icon" href="./img/iconlogo.ico">
+ 
 </head>
 <body>
     <header>
@@ -31,15 +32,21 @@
             </ul>
         </div>
         <div class="navbt">
-         <% if (user) { %>
-             <a href="/profile">
-                <img src="./img/lk.svg" alt="">
-            </a>
-        <% } else { %>
-            <a href="/login">
-                <li>Авторизация/Регистрация</li> 
-            </a>
-        <% } %>
+            <% if (user) { %>
+                <% if (user.role === 'admin') { %>
+                   <a href="/admin">
+                    <li>Админ-панель</li> 
+                   </a>
+                <% } else { %>
+                    <a href="/profile">
+                        <img src="./img/lk.svg" alt="">
+                    </a>
+                <% } %>
+            <% } else { %>
+                  <a href="/login">
+                    <li>Авторизация/Регистрация</li> 
+                </a>
+           <% } %>
             <form action="/addDevelopment">
                 <button>+ Новый материал</button>
             </form>
@@ -59,28 +66,17 @@
             </form>
             <div class="filtr">
                 <div class="ooo">
-                    <select class="naprav" id="nap">
-                        <option>Категории</option>
-                        <option>Русский язык</option>
-                        <option>История</option>
-                        <option>Информатика</option>
-                        <option>Математика</option>
-                        <option>Биология</option>
-                        <option>География</option>
-                        <option>Английский язык</option>
-                        <option>Литература</option>
+                    <select class="naprav" id="categoryFilter">
+                        <option value="">Все категории</option>
+                        <% categories.forEach(category => { %>
+                            <option value="<%= category.id %>"><%= category.name %></option>
+                        <% }); %>
                     </select>
-                    <select class="naprav" id="nap">
-                        <option>Теги</option>
-                        <option>Презентации</option>
-                        <option>Конспекты</option>
-                        <option>Чек-листы</option>
-                        <option>Видео</option>
-                        <option>Аудио</option>
-                        <option>Практика</option>
-                        <option>Планы урока</option>
-                        <option>Наглядные</option>
-                        <option>Комплекс</option>
+                    <select class="naprav" id="tagFilter">
+                        <option value="">Все теги</option>
+                        <% tags.forEach(tag => { %>
+                            <option value="<%= tag.id %>"><%= tag.name %></option>
+                        <% }); %>
                     </select>
                 </div>
             </div>
@@ -88,184 +84,79 @@
     </section13>
     <section14>
         <div class="catalog" id="catalogContainer">
-            
-                <div class="cardct">
-                    <a href="card.html"> <img src="./img/card1.png" alt="" width="380" height="200">
-                        <p class="title">Презентация к уроку английского языка "My future job"</p>
-                    </a>
-                    <div class="teg">
-                        <p>pptx</p>
-                        <p>5 класс</p>
-                        <p>Презентация</p>
-                    </div>
-                    <div class="ctbutton">
-                        <div class="bs">
-                            <form action="">
-                                <button>Скачать</button>
-                            </form>
-                        </div>
-                        <div class="bp">
-                            <form action="/card">
-                                <button>Подробнее</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="cardct">
-                    <a href="card.html"><img src="./img/card3.png" alt="" width="380" height="200">
-                        <p class="title">Презентация: Искусственный интеллект и нейронные сети</p>
-                    </a>
-                    <div class="teg">
-                        <p>pptx</p>
-                        <p>Презентация</p>
-                    </div>
-                    <div class="ctbutton">
-                        <div class="bs">
-                            <form action="">
-                                <button>Скачать</button>
-                            </form>
-                        </div>
-                        <div class="bp">
-                            <form action="/card">
-                                <button>Подробнее</button>
-                            </form>
+            <% if (developments && developments.length > 0) { %>
+                <% developments.forEach(development => { %>
+                    <div class="cardct">
+                        <a href="/card?id=<%= development.id %>">
+                            <% if (development.preview) { %>
+                                <img src="<%= development.preview%>" alt="Превью">
+                            <% } else  { %>
+                                <img src="<%= development.preview%>" alt="Превью">
+                            <% } %>
+                            <p class="title"><%= development.title %></p>
+                        </a>
+                        <p class="category"><%= development.category.name %></p>
+                        <div class="ctbutton">
+                            <div class="bs">
+                                <a href="<%= development.file_path %>" download>
+                                    <button>Скачать</button>
+                                </a>
+                            </div>
+                            <div class="bp">
+                                <form action="/card">
+                                    <input type="hidden" name="id" value="<%= development.id %>">
+                                    <button>Подробнее</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="cardct">
-                    <a href="card.html"><img src="./img/card2.png" alt="" width="380" height="200">
-                        <p class="title">Повторение курса алгебры
-                            7 класс: повторение - мать учения</p>
-                    </a>
-                    <div class="teg">
-                        <p>docx</p>
-                        <p>7 класс</p>
-                        <p>Планы урока</p>
-                    </div>
-                    <div class="ctbutton">
-                        <div class="bs">
-                            <form action="">
-                                <button>Скачать</button>
-                            </form>
-                        </div>
-                        <div class="bp">
-                            <form action="/card">
-                                <button>Подробнее</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            
-                <div class="cardct">
-                    <a href="card.html"><img src="./img/card4.png" alt="" width="380" height="200">
-                        <p class="title">Методическая разработка занятия «Фотография как память»</p>
-                    </a>
-                    <div class="teg">
-                        <p>Бесплатно</p>
-                        <p>Конспекты и статьи</p>
-                        <p>docx</p>
-                    </div>
-                    <div class="ctbutton">
-                        <div class="bs">
-                            <form action="">
-                                <button>Скачать</button>
-                            </form>
-                        </div>
-                        <div class="bp">
-                            <form action="/card">
-                                <button>Подробнее</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="cardct">
-                    <a href="card.html"><img src="./img/card6.png" alt="" width="380" height="200">
-                        <p class="title">Образовательные смены по химии «Сириуса» - это здорово!</p>
-                    </a>
-                    <div class="teg">
-                        <p>pdf</p>
-                        <p>8 класс</p>
-                        <p>Наглядные материалы</p>
-                    </div>
-                    <div class="ctbutton">
-                        <div class="bs">
-                            <form action="">
-                                <button>Скачать</button>
-                            </form>
-                        </div>
-                        <div class="bp">
-                            <form action="/card">
-                                <button>Подробнее</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="cardct">
-                    <a href="card.html"><img src="./img/card5.png" alt="" width="380" height="200">
-                        <p class="title">Чек-лист по английскому языку
-                            темы ЕГЭ-2025 </p>
-                    </a>
-                    <div class="teg">
-                        <p>pdf</p>
-                        <p>10-11 класс</p>
-                        <p>Чек-листы</p>
-                    </div>
-                    <div class="ctbutton">
-                        <div class="bs">
-                            <form action="">
-                                <button>Скачать</button>
-                            </form>
-                        </div>
-                        <div class="bp">
-                            <form action="/card">
-                                <button>Подробнее</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                <% }); %>
+            <% } else { %>
+                <p>В каталоге нет ни одной разработки.</p>
+            <% } %>
         </div>
     </section14>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() { 
-    const searchForm = document.getElementById('searchForm'); 
-    const searchInput = document.getElementById('searchInput'); 
-    const catalogContainer = document.getElementById('catalogContainer'); 
-    const cards = Array.from(catalogContainer.getElementsByClassName('cardct')); 
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const catalogContainer = document.getElementById('catalogContainer');
+    const cards = Array.from(catalogContainer.getElementsByClassName('cardct'));
 
-    searchForm.addEventListener('submit', function(event) { 
-        event.preventDefault(); // Предотвращаем перезагрузку страницы 
+    searchForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвращаем перезагрузку страницы
 
-        const searchTerm = searchInput.value.toLowerCase().trim(); 
+        const searchTerm = searchInput.value.toLowerCase().trim();
 
-        // Удаляем старые карточки 
-        catalogContainer.innerHTML = ''; 
+        // Удаляем старые карточки
+        catalogContainer.innerHTML = '';
 
-        if (searchTerm) { 
-            // Сортируем карточки в зависимости от ключевых слов 
-            const filteredCards = cards.filter(card => { 
-                const title = card.querySelector('.title').textContent.toLowerCase(); 
-                return title.includes(searchTerm); 
-            }); 
+        if (searchTerm) {
+            // Сортируем карточки в зависимости от ключевых слов
+            const filteredCards = cards.filter(card => {
+                const title = card.querySelector('.title').textContent.toLowerCase();
+                return title.includes(searchTerm);
+            });
 
-            // Вставляем отфильтрованные карточки в каталог 
-            filteredCards.forEach(card => { 
-                catalogContainer.appendChild(card); 
-            }); 
+            // Вставляем отфильтрованные карточки в каталог
+            filteredCards.forEach(card => {
+                catalogContainer.appendChild(card);
+            });
 
-            // Если нет совпадений, показываем сообщение 
-            if (filteredCards.length === 0) { 
-                const noResults = document.createElement('p'); 
-                noResults.textContent = 'Ничего не найдено'; 
-                catalogContainer.appendChild(noResults); 
+            // Если нет совпадений, показываем сообщение
+            if (filteredCards.length === 0) {
+                const noResults = document.createElement('p');
+                noResults.textContent = 'Ничего не найдено';
+                catalogContainer.appendChild(noResults);
             }
-        } else { 
-            // Если строка поиска пустая, отображаем все карточки в исходном порядке 
-            cards.forEach(card => { 
-                catalogContainer.appendChild(card); 
-            }); 
-        } 
-    }); 
+        } else {
+            // Если строка поиска пустая, отображаем все карточки в исходном порядке
+            cards.forEach(card => {
+                catalogContainer.appendChild(card);
+            });
+        }
+    });
 
     // Дополнительная функция для немедленного отображения поиска по вводу
     searchInput.addEventListener('input', function() {
@@ -285,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (filteredCards.length === 0) {
                 const noResults = document.createElement('p');
-                noResults.textContent = 'Ничего не найдено'; 
+                noResults.textContent = 'Ничего не найдено';
                 catalogContainer.appendChild(noResults);
             }
         } else {
@@ -294,10 +185,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-}); 
-
-
+});
     </script>
+
     
     <footer>
         </div>

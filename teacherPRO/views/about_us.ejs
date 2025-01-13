@@ -34,15 +34,21 @@
             </ul>
         </div>
         <div class="navbt">
-         <% if (user) { %>
-             <a href="/profile">
-                <img src="./img/lk.svg" alt="">
-            </a>
-        <% } else { %>
-            <a href="/login">
-                <li>Авторизация/Регистрация</li> 
-            </a>
-        <% } %>
+            <% if (user) { %>
+                <% if (user.role === 'admin') { %>
+                   <a href="/admin">
+                    <li>Админ-панель</li> 
+                   </a>
+                <% } else { %>
+                    <a href="/profile">
+                        <img src="./img/lk.svg" alt="">
+                    </a>
+                <% } %>
+            <% } else { %>
+                  <a href="/login">
+                    <li>Авторизация/Регистрация</li> 
+                </a>
+           <% } %>
             <form action="/addDevelopment">
                 <button>+ Новый материал</button>
             </form>

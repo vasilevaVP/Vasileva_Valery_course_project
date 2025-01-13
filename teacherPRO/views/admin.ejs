@@ -150,108 +150,128 @@
             padding: 10px;
             text-align: left;
         }
+        .message {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .message.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+  }
+  .message.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+  }
          
     </style>
 </head>
 <body>
     <a href="/index"><span class="close" id="closeConfirm">← На главную</span></a>
     <div class="admin-container">
-        <h1>Админ панель</h1>
-        <% if (user) { %>
-        <p>Добро пожаловать, <%= user.fullName %>! <a href="/logout">Выйти</a></p>
-        <% } else { %>
-        <p>Вы не авторизованы.</p>
-        <p><a href="/login">Авторизоваться</a></p>
-        <% } %>
-       
-        <div class="form-section">
-            <h2>Добавить тег</h2>
-            <div id="tagMessage"></div>
-            <div class="form-group">
-                <label for="tagName">Название тега:</label>
-                <input type="text" id="tagName" name="tagName" required>
-            </div>
-            <div class="button-container">
-                <button onclick="addTag()">Добавить тег</button>
-            </div>
-        </div>
-        <div class="form-section">
-            <h2>Добавить категорию</h2>
-            <div id="categoryMessage"></div>
-            <div class="form-group">
-                <label for="categoryName">Название категории:</label>
-                <input type="text" id="categoryName" name="categoryName" required>
-            </div>
-            <div class="button-container">
-                <button onclick="addCategory()">Добавить категорию</button>
-            </div>
-        </div>
-        <div class="form-section">
-            <h2>Добавить разработку</h2>
-            <div id="developmentMessage"></div>
-            <form id="developmentForm">
-                <div class="form-group">
-                    <label for="developmentTitle">Название разработки:</label>
-                    <input type="text" id="developmentTitle" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="developmentDescription">Описание:</label>
-                    <textarea id="developmentDescription" name="description" rows="4"></textarea>
-                </div>
-                <div class="form-group">
-                  <label for="developmentFile">Файл разработки:</label>
-                   <input type="file" id="developmentFile" name="file_path" accept=".pdf,.docx,.pptx,.mp4" required>
-               </div>
-               <div class="form-group">
-                  <label for="developmentPreview">Превью:</label>
-                    <input type="file" id="developmentPreview" name="preview" accept=".jpg,.jpeg,.png"  required onchange="previewImage(event)">
-               </div>
-                <div class="preview-container">
-                    <img id="preview-img" src="#" alt="Превью" style="display:none;">
-                </div>
-                  <div class="form-group">
-                    <label for="developmentCategoryId">Категория:</label>
-                    <select id="developmentCategoryId" name="categoryId" required></select>
-                 </div>
-                <div class="form-group">
-                 <label for="developmentTags">Теги:</label>
-                    <div id="tagCheckboxes">
+         <h1>Админ панель</h1>
+            <% if (user) { %>
+            <p>Добро пожаловать, <%= user.fullName %>! <a href="/logout">Выйти</a></p>
+            <% } else { %>
+            <p>Вы не авторизованы.</p>
+            <p><a href="/login">Авторизоваться</a></p>
+            <% } %>
+            <div id="developments" class="tab-content active">
+    
+                  <div class="form-section">
+                    <h2>Добавить тег</h2>
+                     <div id="tagMessage"></div>
+                        <div class="form-group">
+                            <label for="tagName">Название тега:</label>
+                            <input type="text" id="tagName" name="tagName" required>
+                       </div>
+                     <div class="button-container">
+                        <button onclick="addTag()">Добавить тег</button>
                     </div>
+                 </div>
+                 <div class="form-section">
+                   <h2>Добавить категорию</h2>
+                     <div id="categoryMessage"></div>
+                     <div class="form-group">
+                          <label for="categoryName">Название категории:</label>
+                          <input type="text" id="categoryName" name="categoryName" required>
+                     </div>
+                     <div class="button-container">
+                        <button onclick="addCategory()">Добавить категорию</button>
+                     </div>
                 </div>
-               <div class="button-container">
-                    <button type="button" onclick="addDevelopment()">Добавить разработку</button>
-                </div>
-            </form>
-        </div>
-        <div class="form-section">
-            <h2>Список пользователей</h2>
-               <p>Всего пользователей: <%= userCount %></p>
-                 <div class="user-list">
-                     <table>
-                          <tr>
-                               <th>ID</th>
-                              <th>ФИО</th>
-                              <th>Почта</th>
-                          </tr>
-                       <% if(users) {
-                         users.forEach(user => { %>
-                        <tr>
-                            <td><%= user.id %></td>
-                             <td><%= user.fullName %></td>
-                           <td><%= user.email %></td>
-                         </tr>
-                        <% });
-                           }
-                        %>
-                    </table>
+                 <div class="form-section">
+                    <h2>Добавить разработку</h2>
+                    <form id="addDevelopmentForm" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="developmentTitle">Название разработки:</label>
+                            <input type="text" id="developmentTitle" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="developmentDescription">Описание:</label>
+                            <textarea id="developmentDescription" name="description" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="developmentFile">Файл разработки:</label>
+                              <input type="file" id="developmentFile" name="file_path" accept=".pdf,.docx,.pptx,.mp4" required>
+                          </div>
+                        <div class="form-group">
+                           <label for="developmentPreview">Превью:</label>
+                              <input type="file" id="developmentPreview" name="preview" accept=".jpg,.jpeg,.png"  required onchange="previewImage(event)">
+                        </div>
+                        <div class="preview-container">
+                            <img id="preview-img" src="#" alt="Превью" style="display:none;">
+                        </div>
+                        <div class="form-group">
+                            <label for="developmentCategoryId">Категория:</label>
+                            <select id="developmentCategoryId" name="category_id" required></select>
+                        </div>
+                        <div id="tagsContainer"></div>
+                        <div id="errorContainer" class="error-message"></div>
+                      <button type="submit">Загрузить</button>
+                    </form>
+                    <div id="developmentMessage"></div>
                   </div>
+                    </div>
+                <div class="form-section">
+                    <h2>Редактировать и удалить разработки</h2>
+                    <div id="developmentsList">
+                    </div>
+                </div> 
+                <div id="users" class="tab-content">
+               <div class="form-section">
+                   <h2>Список пользователей</h2>
+                   <p>Всего пользователей: <%= userCount %></p>
+                      <div class="user-list">
+                           <table>
+                                <tr>
+                                     <th>ID</th>
+                                    <th>ФИО</th>
+                                     <th>Почта</th>
+                               </tr>
+                               <% if(users) {
+                                  users.forEach(user => { %>
+                                      <tr>
+                                           <td><%= user.id %></td>
+                                           <td><%= user.fullName %></td>
+                                         <td><%= user.email %></td>
+                                      </tr>
+                                      <% });
+                                  }
+                               %>
+                           </table>
+                     </div>
+               </div>
              </div>
-  
-    </div>
-     <script>
+            </div>
+           
+
+        <script>
         const categorySelect = document.getElementById('developmentCategoryId');
         const tagCheckboxes = document.getElementById('tagCheckboxes');
-        const previewImg = document.getElementById('preview-img');
+         const previewImg = document.getElementById('preview-img');
+          const developmentsListContainer = document.getElementById('developmentsList');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const tabButtons = document.querySelectorAll('.tab-button');
 
         async function fetchCategories() {
            try {
@@ -298,93 +318,127 @@
         }
        fetchCategories();
         fetchTags();
-         async function addTag() {
-            const tagName = document.getElementById('tagName').value.trim();
-            const tagMessage = document.getElementById('tagMessage');
-              try {
-                const response = await fetch('/admin/add/tag', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ name: tagName }),
-                });
-             const data = await response.json();
-            if (response.ok) {
-                 tagMessage.innerHTML = `<div class="message success">Тег "${data.tag.name}" успешно добавлен</div>`;
-                   document.getElementById('tagName').value = '';
-            } else {
-                 tagMessage.innerHTML = `<div class="message error">${data.error}</div>`;
-            }
-              setTimeout(() => tagMessage.innerHTML = "", 5000);
-           } catch (error) {
-                console.error('Ошибка при добавлении тега:', error);
-               tagMessage.innerHTML = `<div class="message error">Ошибка сервера. Попробуйте позже.</div>`;
-               setTimeout(() => tagMessage.innerHTML = "", 5000);
-         }
-         }
-         async function addCategory() {
-             const categoryName = document.getElementById('categoryName').value.trim();
-            const categoryMessage = document.getElementById('categoryMessage');
-            try {
-                 const response = await fetch('/admin/add/category', {
-                    method: 'POST',
-                    headers: {
-                     'Content-Type': 'application/json',
-                     },
-                   body: JSON.stringify({ name: categoryName }),
-              });
-             const data = await response.json();
-                if (response.ok) {
-                    categoryMessage.innerHTML = `<div class="message success">Категория "${data.category.name}" успешно добавлена</div>`;
-                     document.getElementById('categoryName').value = '';
-               } else {
-                 categoryMessage.innerHTML = `<div class="message error">${data.error}</div>`;
-              }
-            setTimeout(() => categoryMessage.innerHTML = "", 5000);
-         } catch (error) {
-             console.error('Ошибка при добавлении категории:', error);
-              categoryMessage.innerHTML = `<div class="message error">Ошибка сервера. Попробуйте позже.</div>`;
-            setTimeout(() => categoryMessage.innerHTML = "", 5000);
-           }
-         }
-        async function addDevelopment() {
-             const form = document.getElementById('developmentForm');
-             const formData = new FormData(form);
-              const developmentMessage = document.getElementById('developmentMessage');
-            try {
-                const response = await fetch('/admin/add/development', {
-                  method: 'POST',
-                   body: formData,
-              });
+
+             async function addTag() {
+                const tagName = document.getElementById('tagName').value.trim();
+                const tagMessage = document.getElementById('tagMessage');
+                  try {
+                    const response = await fetch('/admin/add/tag', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name: tagName }),
+                    });
                  const data = await response.json();
-
-              if (response.ok) {
-                  developmentMessage.innerHTML = `<div class="message success">Разработка "${data.development.title}" успешно добавлена</div>`;
-                    form.reset();
-                    previewImg.style.display = 'none';
-                    previewImg.src = '#';
-
-               } else {
-                     developmentMessage.innerHTML = `<div class="message error">${data.error}</div>`;
+                if (response.ok) {
+                     tagMessage.innerHTML = `<div class="message success">Тег "${data.tag.name}" успешно добавлен</div>`;
+                       document.getElementById('tagName').value = '';
+                } else {
+                     tagMessage.innerHTML = `<div class="message error">${data.error}</div>`;
+                }
+                  setTimeout(() => tagMessage.innerHTML = "", 5000);
+               } catch (error) {
+                    console.error('Ошибка при добавлении тега:', error);
+                   tagMessage.innerHTML = `<div class="message error">Ошибка сервера. Попробуйте позже.</div>`;
+                   setTimeout(() => tagMessage.innerHTML = "", 5000);
+             }
+             }
+             async function addCategory() {
+                 const categoryName = document.getElementById('categoryName').value.trim();
+                const categoryMessage = document.getElementById('categoryMessage');
+                try {
+                     const response = await fetch('/admin/add/category', {
+                        method: 'POST',
+                         headers: {
+                          'Content-Type': 'application/json',
+                        },
+                       body: JSON.stringify({ name: categoryName }),
+                  });
+                 const data = await response.json();
+                    if (response.ok) {
+                        categoryMessage.innerHTML = `<div class="message success">Категория "${data.category.name}" успешно добавлена</div>`;
+                         document.getElementById('categoryName').value = '';
+                   } else {
+                     categoryMessage.innerHTML = `<div class="message error">${data.error}</div>`;
+                  }
+                setTimeout(() => categoryMessage.innerHTML = "", 5000);
+             } catch (error) {
+                 console.error('Ошибка при добавлении категории:', error);
+                  categoryMessage.innerHTML = `<div class="message error">Ошибка сервера. Попробуйте позже.</div>`;
+                setTimeout(() => categoryMessage.innerHTML = "", 5000);
                }
-               setTimeout(() => developmentMessage.innerHTML = "", 5000);
-         } catch (error) {
-            console.error('Ошибка при добавлении разработки:', error);
-             developmentMessage.innerHTML = `<div class="message error">Ошибка сервера. Попробуйте позже.</div>`;
-                setTimeout(() => developmentMessage.innerHTML = "", 5000);
+             }
+             document.getElementById('addDevelopmentForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+          document.getElementById('errorContainer').textContent = '';
+          const formData = new FormData(this);
+
+        try {
+            const response = await fetch('/admin/add/development/step1', {
+              method: 'POST',
+               body: formData,
+            });
+           if (!response.ok) {
+               const errorData = await response.json();
+              throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
             }
-      }
-        function previewImage(event) {
-            const file = event.target.files[0];
-             if (file) {
-                 previewImg.src = URL.createObjectURL(file);
-                previewImg.style.display = 'block';
-            } else {
-                previewImg.style.display = 'none';
-               previewImg.src = '#';
-           }
-        }
-    </script>
+              const data = await response.json();
+             if (data.success) {
+                  document.getElementById('tagsContainer').innerHTML = data.tagsHtml;
+                 this.action = `/admin/add/development/step2/${data.developmentId}`;
+                  this.removeEventListener('submit', arguments.callee);
+               this.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+                    const formData2 = new FormData(this);
+                  try {
+                    const response2 = await fetch(this.action, {
+                        method: 'POST',
+                         body: formData2,
+                    });
+                     if (!response2.ok) {
+                      const errorData2 = await response2.json();
+                          throw new Error(errorData2.error || `HTTP error! status: ${response2.status}`);
+                        }
+                       const data2 = await response2.json();
+                        if(data2.success) {
+                            window.location.href = data2.redirect;
+                        }
+                     } catch (error) {
+                       console.error('Ошибка при добавлении разработки:', error);
+                       document.getElementById('errorContainer').textContent = error.message;
+                     }
+               });
+             } else {
+                  document.getElementById('errorContainer').textContent =  data.error
+              }
+           } catch (error) {
+                console.error('Ошибка при добавлении разработки:', error);
+                document.getElementById('errorContainer').textContent = error.message;
+            }
+     });
+            function previewImage(event) {
+                const file = event.target.files[0];
+                 if (file) {
+                     previewImg.src = URL.createObjectURL(file);
+                    previewImg.style.display = 'block';
+                } else {
+                    previewImg.style.display = 'none';
+                   previewImg.src = '#';
+               }
+            }
+        function openTab(tabId) {
+                    tabContents.forEach(tab => {
+                         tab.classList.remove('active');
+                      });
+                    tabButtons.forEach(button => {
+                       button.classList.remove('active');
+                     });
+                  document.getElementById(tabId).classList.add('active');
+                    document.querySelector(`[onclick="openTab('${tabId}')"]`).classList.add('active');
+             }
+
+             
+        </script>
 </body>
 </html>

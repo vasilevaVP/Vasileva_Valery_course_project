@@ -3,14 +3,13 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const { Sequelize, DataTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
-const path = require("path");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const path = require("path");
 
 const app = express();
 const port = 3000;
 
-// Настройка базы данных SQLiteF
+// Настройка базы данных SQLite
 const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: "db.sqlite",
@@ -112,10 +111,6 @@ const Development = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "category_id",
-      references: {
-        model: "categories",
-        key: "id",
-      },
     },
     userId: {
       type: DataTypes.INTEGER,
@@ -175,6 +170,7 @@ const Tag = sequelize.define(
     tableName: "tags",
   }
 );
+
 // Модель DownloadHistory
 const DownloadHistory = sequelize.define(
   "DownloadHistory",
@@ -244,7 +240,26 @@ const Profile = sequelize.define(
 // Связующая таблица DevelopmentTags для Many-to-Many
 const DevelopmentTags = sequelize.define(
   "DevelopmentTags",
-  {},
+  {
+    developmentId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "development_id",
+      references: {
+        model: "developments",
+        key: "development_id",
+      },
+    },
+    tagId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "tag_id",
+      references: {
+        model: "tags",
+        key: "tag_id",
+      },
+    },
+  },
   { timestamps: false, tableName: "development_tags" }
 );
 
@@ -259,21 +274,25 @@ Development.belongsTo(User, { foreignKey: "userId", as: "user" });
 User.hasMany(DownloadHistory, { foreignKey: "userId", as: "downloads" });
 DownloadHistory.belongsTo(User, { foreignKey: "userId", as: "user" });
 
-Category.hasMany(Development, { foreignKey: "categoryId", as: "developments" });
-Development.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
-
+Category.hasMany(Development, {
+  foreignKey: "categoryId",
+  as: "developments",
+});
+Development.belongsTo(Category, {
+  foreignKey: "categoryId",
+  as: "category",
+});
 // Many-to-Many между Development и Tag
 Development.belongsToMany(Tag, {
   through: DevelopmentTags,
-  foreignKey: "developmentId",
+  foreignKey: "development_id",
   as: "tags",
 });
 Tag.belongsToMany(Development, {
   through: DevelopmentTags,
-  foreignKey: "tagId",
+  foreignKey: "tag_id",
   as: "developments",
 });
-
 // Profile
 User.hasOne(Profile, { foreignKey: "userId", as: "profile" });
 Profile.belongsTo(User, { foreignKey: "userId", as: "user" });
@@ -285,11 +304,11 @@ Profile.hasMany(DownloadHistory, {
 });
 DownloadHistory.belongsTo(Profile, { foreignKey: "userId", as: "profile" });
 Development.hasMany(DownloadHistory, {
-  foreignKey: "developmentId",
+  foreignKey: "development_id",
   as: "downloads",
 });
 DownloadHistory.belongsTo(Development, {
-  foreignKey: "developmentId",
+  foreignKey: "development_id",
   as: "development",
 });
 
@@ -388,7 +407,25 @@ app.get("/index", async (req, res) => {
 
 // Роут для страницы каталога
 app.get("/catalog", async (req, res) => {
-  res.render("catalog", { user: req.session.user });
+  try {
+    const developments = await Development.findAll({
+      include: [
+        { model: Category, as: "category" },
+        { model: Tag, through: DevelopmentTags, as: "tags" },
+      ],
+    });
+    const categories = await Category.findAll();
+    const tags = await Tag.findAll();
+    res.render("catalog", {
+      user: req.session.user,
+      developments,
+      categories,
+      tags,
+    });
+  } catch (error) {
+    console.error("Ошибка получения каталога:", error);
+    res.status(500).send("Ошибка сервера");
+  }
 });
 
 // Роут для страницы о нас
@@ -462,12 +499,21 @@ app.get("/admin", isAuthenticated, hasRole("admin"), async (req, res) => {
       ],
     });
     const userCount = users.length;
-    res.render("admin", { user: req.session.user, users, userCount });
+    const categories = await Category.findAll();
+    const tags = await Tag.findAll();
+    res.render("admin", {
+      user: req.session.user,
+      users,
+      userCount,
+      categories,
+      tags,
+    });
   } catch (error) {
     console.error("Ошибка получения списка пользователей:", error);
     res.status(500).send("Ошибка сервера");
   }
 });
+
 // Настройка multer для обработки загрузки файлов
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -483,18 +529,48 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|pdf|docx|pptx|mp4/;
-  if (!allowedTypes.test(file.mimetype)) {
+  const allowedMimeTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "video/mp4",
+  ];
+
+  const allowedExtensions = [
+    ".jpeg",
+    ".jpg",
+    ".png",
+    ".pdf",
+    ".docx",
+    ".pptx",
+    ".mp4",
+  ];
+
+  const mimeType = file.mimetype.toLowerCase();
+  const extension = path.extname(file.originalname).toLowerCase();
+
+  if (
+    !allowedMimeTypes.includes(mimeType) ||
+    !allowedExtensions.includes(extension)
+  ) {
     return cb("Ошибка: Неправильный тип файла.", false);
   }
+
   if (file.size > 10 * 1024 * 1024) {
     return cb("Ошибка: Файл слишком большой. Максимальный размер - 10 МБ.");
   }
+
   cb(null, true);
 };
 
-const uploads = multer({ storage: storage, fileFilter: fileFilter });
-
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
 // AJAX endpoints для добавления
 app.post(
   "/admin/add/tag",
@@ -548,46 +624,226 @@ app.post(
     }
   }
 );
+
 app.post(
-  "/admin/add/development",
+  "/admin/add/development/step1",
   isAuthenticated,
   hasRole("admin"),
-  uploads.fields([
+  upload.fields([
     { name: "preview", maxCount: 1 },
     { name: "file_path", maxCount: 1 },
   ]),
   async (req, res) => {
     try {
-      const { title, description, categoryId, tags } = req.body;
+      const { title, description, category_id } = req.body;
       const userId = req.session.user.id;
+
       if (!req.files || !req.files["preview"] || !req.files["file_path"]) {
-        return res.status(400).send({ error: "Не загружены файлы." });
+        return res.status(400).json({ error: "Не загружены файлы." });
       }
 
-      const previewPath = req.files["preview"][0].path.replace("public\\", "");
-      const filePath = req.files["file_path"][0].path.replace("public\\", "");
+      const previewFile = req.files["preview"][0];
+      const filePathFile = req.files["file_path"][0];
 
+      const previewPath = path
+        .join("uploads", path.basename(previewFile.path))
+        .replace(/\\/g, "/");
+      const filePath = path
+        .join("uploads", path.basename(filePathFile.path))
+        .replace(/\\/g, "/");
+
+      const parsedCategoryId = parseInt(category_id, 10);
+      if (isNaN(parsedCategoryId)) {
+        return res.status(400).json({ error: "Некорректный ID категории" });
+      }
       const development = await Development.create({
         title,
         description,
         file_path: filePath,
         preview: previewPath,
-        categoryId,
+        categoryId: parsedCategoryId,
         userId,
+      });
+
+      console.log("Путь к превью:", previewPath);
+      console.log("Путь к файлу:", filePath);
+
+      const tags = await Tag.findAll();
+      res.json({
+        success: true,
+        developmentId: development.id,
+        tagsHtml: renderTagsHtml(tags, development.id),
+      });
+    } catch (error) {
+      console.error("Ошибка при добавлении разработки:", error);
+      if (error instanceof multer.MulterError) {
+        return res.status(400).json({ error: error.message });
+      } else if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        return res.status(400).json({ error: errors.join(", ") });
+      }
+      res.status(500).json({ error: "Ошибка при добавлении разработки" });
+    }
+  }
+);
+
+// Этап 2: Добавление тегов к разработке
+app.post(
+  "/admin/add/development/step2/:developmentId",
+  isAuthenticated,
+  hasRole("admin"),
+  async (req, res) => {
+    try {
+      const developmentId = parseInt(req.params.developmentId, 10);
+      if (isNaN(developmentId)) {
+        return res.status(400).json({ error: "Некорректный ID разработки" });
+      }
+      const { tags } = req.body;
+      const development = await Development.findByPk(developmentId);
+      if (!development) {
+        return res.status(404).json({ error: "Разработка не найдена" });
+      }
+
+      let tagIds = [];
+      if (tags) {
+        tagIds = Array.isArray(tags)
+          ? tags
+          : tags.split(",").map(Number).filter(Boolean);
+      }
+
+      const developmentTags = await development.getTags();
+      for (const tag of developmentTags) {
+        await DevelopmentTags.destroy({
+          where: { developmentId, tagId: tag.id },
+        });
+      }
+      if (tagIds && tagIds.length > 0) {
+        const toCreate = tagIds.map((tagId) => ({
+          developmentId: development.id,
+          tagId: tagId,
+        }));
+        await DevelopmentTags.bulkCreate(toCreate, {
+          validate: true,
+          individualHooks: true,
+        });
+      }
+      res.json({ success: true, redirect: "/admin" });
+    } catch (error) {
+      console.error("Ошибка при добавлении тегов:", error);
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        return res.status(400).json({ error: errors.join(", ") });
+      }
+      res.status(500).json({ error: "Ошибка сервера" });
+    }
+  }
+);
+
+function renderTagsHtml(tags, developments) {
+  return `
+       <h3>Выберите теги:</h3>
+          <div id="tagList">
+          ${tags
+            .map(
+              (tag) => `
+                <input type="checkbox" name="tags" value="${tag.id}" id="tag${tag.id}">
+                <label for="tag${tag.id}">${tag.name}</label><br>
+             `
+            )
+            .join("")}
+         </div>
+         <button type="submit">Подтвердить загрузку</button>
+    `;
+}
+
+app.post(
+  "/admin/developments/delete/:id",
+  isAuthenticated,
+  hasRole("admin"),
+  async (req, res) => {
+    const developmentId = req.params.id;
+    try {
+      await Development.destroy({ where: { id: developmentId } });
+      res.redirect("/admin");
+    } catch (error) {
+      console.error("Ошибка удаления разработки:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+app.get(
+  "/admin/developments/edit/:id",
+  isAuthenticated,
+  hasRole("admin"),
+  async (req, res) => {
+    try {
+      const developmentId = req.params.id;
+      const development = await Development.findByPk(developmentId, {
+        include: [Category, Tag],
+      });
+      if (!development) {
+        return res.status(404).send("Разработка не найдена");
+      }
+      const categories = await Category.findAll();
+      const tags = await Tag.findAll();
+      res.render("admin/development_edit", { development, categories, tags });
+    } catch (error) {
+      console.error("Ошибка получения разработки для редактирования:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
+app.post(
+  "/admin/developments/edit/:id",
+  isAuthenticated,
+  hasRole("admin"),
+  upload.fields([
+    { name: "preview", maxCount: 1 },
+    { name: "file_path", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const developmentId = req.params.id;
+      const { title, description, category_id, tags } = req.body;
+      const development = await Development.findByPk(developmentId);
+
+      let previewPath = development.preview;
+      let filePath = development.file_path;
+
+      if (req.files) {
+        if (req.files["preview"]) {
+          previewPath = req.files["preview"][0].path.replace("public\\", "");
+        }
+        if (req.files["file_path"]) {
+          filePath = req.files["file_path"][0].path.replace("public\\", "");
+        }
+      }
+
+      await development.update({
+        title,
+        description,
+        category_id,
+        file_path: filePath,
+        preview: previewPath,
       });
 
       if (tags && tags.length > 0) {
         const tagIds = Array.isArray(tags) ? tags : tags.split(",").map(Number);
         await development.setTags(tagIds);
+      } else {
+        await development.setTags([]);
       }
 
-      res.status(201).send({ success: true, development });
+      res.redirect("/admin");
     } catch (error) {
-      console.error("Ошибка при добавлении разработки:", error);
-      if (error instanceof multer.MulterError) {
-        return res.status(400).send({ error: error.message });
-      }
-      res.status(500).send({ error: "Ошибка при добавлении разработки" });
+      console.error("Ошибка редактирования разработки:", error);
+      res.status(500).send("Internal Server Error");
     }
   }
 );
@@ -692,7 +948,6 @@ app.post("/login", async (req, res) => {
 app.get("/profile", isAuthenticated, (req, res) => {
   res.render("profile", { user: req.session.user });
 });
-
 // Роут для страницы профиля
 app.get("/profile", isAuthenticated, async (req, res) => {
   try {
@@ -707,7 +962,7 @@ app.get("/profile", isAuthenticated, async (req, res) => {
         {
           model: Development,
           as: "developments",
-          attributes: ["title", "description", "id"],
+          attributes: ["title", "description", "id", "preview"],
         },
         {
           model: DownloadHistory,
@@ -734,7 +989,6 @@ app.get("/profile", isAuthenticated, async (req, res) => {
     res.status(500).send("Ошибка сервера");
   }
 });
-
 // Роут для выхода
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
