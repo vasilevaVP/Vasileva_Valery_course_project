@@ -201,7 +201,6 @@ align-items: space-between;
 
      .development-item img {
         max-width: 100%;
-        max-height: 100px;
        object-fit: contain;
      }
 
@@ -226,151 +225,132 @@ align-items: space-between;
     </style>
 </head>
 <body>
-    <a href="/index"><span class="close" id="closeConfirm">← На главную</span></a>
-      <div class="admin-container">
-          <h1>Админ панель</h1>
-             <% if (user) { %>
+  <a href="/index"><span class="close" id="closeConfirm">← На главную</span></a>
+    <div class="admin-container">
+        <h1>Админ панель</h1>
+            <% if (user) { %>
               <p>Добро пожаловать, <%= user.fullName %>! <a href="/logout">Выйти</a></p>
-            <% } else { %>
+          <% } else { %>
               <p>Вы не авторизованы.</p>
-               <p><a href="/login">Авторизоваться</a></p>
-           <% } %>
-             <div id="developments" class="tab-content active">
-                 <div class="form-section">
+              <p><a href="/login">Авторизоваться</a></p>
+          <% } %>
+            <div id="developments" class="tab-content active">
+                <div class="form-section">
                     <h2>Добавить тег</h2>
                       <div class="form-group">
-                           <label for="tagName">Название тега:</label>
-                           <input type="text" id="tagName" name="tagName" required>
-                      </div>
-                      <div class="button-container">
-                        <button onclick="addTag()">Добавить тег</button>
-                    </div>
-                    <div id="tagMessage"></div>
-                 </div>
-                 <div class="form-section">
-                      <h2>Добавить категорию</h2>
-                       <div class="form-group">
-                            <label for="categoryName">Название категории:</label>
-                             <input type="text" id="categoryName" name="categoryName" required>
-                       </div>
-                        <div class="button-container">
-                              <button onclick="addCategory()">Добавить категорию</button>
+                            <label for="tagName">Название тега:</label>
+                            <input type="text" id="tagName" name="tagName" required>
                         </div>
-                      <div id="categoryMessage"></div>
+                        <div class="button-container">
+                            <button onclick="addTag()">Добавить тег</button>
+                        </div>
+                    <div id="tagMessage"></div>
+               </div>
+               <div class="form-section">
+                   <h2>Добавить категорию</h2>
+                     <div class="form-group">
+                        <label for="categoryName">Название категории:</label>
+                         <input type="text" id="categoryName" name="categoryName" required>
+                    </div>
+                    <div class="button-container">
+                       <button onclick="addCategory()">Добавить категорию</button>
+                     </div>
+                    <div id="categoryMessage"></div>
+                </div>
+               <div class="form-section">
+                    <h2>Добавить разработку</h2>
+                   <form id="addDevelopmentForm" method="post" enctype="multipart/form-data">
+                       <div class="form-group">
+                           <label for="developmentTitle">Название разработки:</label>
+                            <input type="text" id="developmentTitle" name="title" required>
+                       </div>
+                     <div class="form-group">
+                            <label for="developmentDescription">Описание:</label>
+                            <textarea id="developmentDescription" name="description" rows="4"></textarea>
+                     </div>
+                       <div class="form-group">
+                            <label for="developmentFile">Файл разработки:</label>
+                           <input type="file" id="developmentFile" name="file_path" accept=".pdf,.docx,.pptx,.mp4" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="developmentPreview">Превью:</label>
+                             <input type="file"  id="developmentPreview" name="preview" accept=".jpg,.jpeg,.png"  required onchange="previewImage(event)">
+                         </div>
+                        <div class="preview-container">
+                           <img id="preview-img" src="#" alt="Превью" style="display:none;">
+                       </div>
+                       <div class="form-group">
+                          <label for="developmentCategoryId">Категория:</label>
+                            <select id="developmentCategoryId" name="category_id" required></select>
+                      </div>
+                     <div id="tagsContainer"></div>
+                       <div id="errorContainer" class="error-message"></div>
+                         <button type="submit">Загрузить</button>
+                   </form>
+                    <div id="developmentMessage"></div>
+                 </div>
+         </div>
+            <div class="form-section">
+                 <h2>Редактировать и удалить разработки</h2>
+                 <div id="developmentsList" class="development-list">
                   </div>
-                   <div class="form-section">
-                      <h2>Добавить разработку</h2>
-                       <form id="addDevelopmentForm" method="post" enctype="multipart/form-data">
-                          <div class="form-group">
-                             <label for="developmentTitle">Название разработки:</label>
-                              <input type="text" id="developmentTitle" name="title" required>
-                           </div>
-                            <div class="form-group">
-                               <label for="developmentDescription">Описание:</label>
-                              <textarea id="developmentDescription" name="description" rows="4"></textarea>
-                             </div>
-                            <div class="form-group">
-                                 <label for="developmentFile">Файл разработки:</label>
-                                  <input type="file" id="developmentFile" name="file_path" accept=".pdf,.docx,.pptx,.mp4" required>
-                            </div>
-                             <div class="form-group">
-                                  <label for="developmentPreview">Превью:</label>
-                                   <input type="file"  id="developmentPreview" name="preview" accept=".jpg,.jpeg,.png"  required onchange="previewImage(event)">
-                             </div>
-                           <div class="preview-container">
-                                 <img id="preview-img" src="#" alt="Превью" style="display:none;">
-                            </div>
-                           <div class="form-group">
-                                <label for="developmentCategoryId">Категория:</label>
-                              <select id="developmentCategoryId" name="category_id" required></select>
-                           </div>
-                           <div id="tagsContainer"></div>
-                           <div id="errorContainer" class="error-message"></div>
-                             <button type="submit">Загрузить</button>
-                        </form>
-                        <div id="developmentMessage"></div>
+            </div>
+            <div id="users" class="tab-content">
+                 <div class="form-section">
+                     <h2>Список пользователей</h2>
+                     <p>Всего пользователей: <%= userCount %></p>
+                         <div class="user-list">
+                            <table>
+                                  <tr>
+                                      <th>ID</th>
+                                       <th>ФИО</th>
+                                      <th>Почта</th>
+                                  </tr>
+                                    <% if(users) {
+                                        users.forEach(user => { %>
+                                        <tr>
+                                            <td><%= user.id %></td>
+                                           <td><%= user.fullName %></td>
+                                              <td><%= user.email %></td>
+                                          </tr>
+                                  <% });
+                                  } %>
+                              </table>
+                        </div>
                     </div>
             </div>
-              <div class="form-section">
-                    <h2>Редактировать и удалить разработки</h2>
-                  <div id="developmentsList" class="development-list">
-                    </div>
-              </div>
-             <div id="users" class="tab-content">
-                   <div class="form-section">
-                        <h2>Список пользователей</h2>
-                         <p>Всего пользователей: <%= userCount %></p>
-                         <div class="user-list">
-                              <table>
-                                   <tr>
-                                        <th>ID</th>
-                                        <th>ФИО</th>
-                                         <th>Почта</th>
-                                    </tr>
-                                   <% if(users) {
-                                        users.forEach(user => { %>
-                                            <tr>
-                                                <td><%= user.id %></td>
-                                                 <td><%= user.fullName %></td>
-                                                <td><%= user.email %></td>
-                                            </tr>
-                                       <% });
-                                   } %>
-                               </table>
-                          </div>
-                     </div>
-               </div>
-          </div>
-          <script>
+    </div>
+    <script>
         const categorySelect = document.getElementById('developmentCategoryId');
         const tagCheckboxes = document.getElementById('tagCheckboxes');
          const previewImg = document.getElementById('preview-img');
           const developmentsListContainer = document.getElementById('developmentsList');
          const tabContents = document.querySelectorAll('.tab-content');
          const tabButtons = document.querySelectorAll('.tab-button');
-           async function fetchCategories() {
-            try {
-                const response = await fetch('/admin/categories');
-                if (!response.ok) {
-                   throw new Error('Failed to fetch categories');
-               }
-               const categories = await response.json();
-                categories.forEach(category => {
-                     const option = document.createElement('option');
-                     option.value = category.id;
-                   option.text = category.name;
-                    categorySelect.appendChild(option);
-                });
-             } catch (error) {
-                console.error('Ошибка при получении категорий:', error);
-            }
-         }
-             async function fetchTags() {
-            try {
-                const response = await fetch('/admin/tags');
-                 if (!response.ok) {
-                       throw new Error('Failed to fetch tags');
-                  }
-                  const tags = await response.json();
-                     tags.forEach(tag => {
-                         const checkbox = document.createElement('input');
-                         checkbox.type = 'checkbox';
-                         checkbox.value = tag.id;
-                      checkbox.name = 'tags';
-                      checkbox.id = `tag-${tag.id}`;
-                      const label = document.createElement('label');
-                       label.htmlFor = `tag-${tag.id}`;
-                      label.textContent = tag.name;
-                      const div = document.createElement('div');
-                       div.appendChild(checkbox);
-                        div.appendChild(label);
-                     tagCheckboxes.appendChild(div);
-                    });
-               } catch (error) {
-                  console.error('Ошибка при получении тегов:', error);
-               }
-            }
-          async function loadDevelopments() {
+         let allCategories = [];
+  async function fetchCategories() {
+    try {
+      const response = await fetch('/admin/categories');
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+      allCategories = await response.json();
+         const categorySelect = document.getElementById('developmentCategoryId');
+                if (categorySelect) {
+                      allCategories.forEach(category => {
+                         const option = document.createElement('option');
+                         option.value = category.id;
+                         option.text = category.name;
+                         categorySelect.appendChild(option);
+                       });
+                    }
+      return allCategories;
+    } catch (error) {
+      console.error('Ошибка при получении категорий:', error);
+      return [];
+    }
+  }
+       async function loadDevelopments() {
             try {
                 const response = await fetch('/admin/developments');
                  if (!response.ok) {
@@ -380,7 +360,8 @@ align-items: space-between;
                    let listHTML = '';
                     developments.forEach(development => {
                        listHTML += `
-                           <div class="development-item">
+                           <div class="development-item" data-development-id="${development.id}">
+                                 <img src="${development.preview}" alt="Превью" />
                                    <p><b>${development.title}</b></p>
                                  <div class="development-actions">
                                        <button onclick="editDevelopment(${development.id})">Редактировать</button>
@@ -410,10 +391,10 @@ align-items: space-between;
                  }
             }
 
-            function renderEditDevelopmentForm(developmentData) {
+             function renderEditDevelopmentForm(developmentData) {
                 const editFormContainer = document.getElementById('developmentsList');
                  editFormContainer.innerHTML = `
-                       <form id="editDevelopmentForm" method="POST" enctype="multipart/form-data" action="/admin/developments/edit/${developmentData.id}">
+                     <form id="editDevelopmentForm"  enctype="multipart/form-data">
                          <div class="form-group">
                              <label for="developmentTitle">Название разработки:</label>
                              <input type="text" id="developmentTitle" name="title" value="${developmentData.title}" required>
@@ -433,84 +414,87 @@ align-items: space-between;
                         <div class="preview-container">
                             <img id="preview-img" src="${developmentData.preview || '/uploads/default-preview.png'}" alt="Превью" style="display: ${developmentData.preview ? 'block' : 'none'};">
                        </div>
- <div class="form-group">
-            <label for="developmentCategoryId">Категория:</label>
-           <select id="developmentCategoryId" name="category_id" required>
-           </select>
-         </div>
+                        <div class="form-group">
+                            <label for="editDevelopmentCategoryId">Категория:</label>
+                              <select id="editDevelopmentCategoryId" name="category_id" required>
+                              </select>
+                         </div>
                          <div id="tagCheckboxes">
                         </div>
                          <div id="errorContainer" class="error-message"></div>
-                            <button type="submit">Сохранить изменения</button>
+                            <button  type="button" onclick="saveChanges(${developmentData.id})">Сохранить изменения</button>
                     </form>`;
-
-                    fetchCategories().then(() => {
-    const categorySelect = document.getElementById('developmentCategoryId');
-      developmentData.categories.forEach(category => {
-      const option = document.createElement('option');
-      option.value = category.id;
-      option.text = category.name;
-        if (category.id === developmentData.categoryId) {
-          option.selected = true;
-       }
-      categorySelect.appendChild(option);
-    });
-  });
-
-              const tagCheckboxes = document.getElementById('tagCheckboxes');
-                developmentData.tags.forEach(tag => {
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                     checkbox.value = tag.id;
-                     checkbox.name = 'tags';
-                      checkbox.id = `tag-${tag.id}`;
-                      if(developmentData.tags && developmentData.tags.some(devTag => devTag.id === tag.id)) {
-                          checkbox.checked = true;
-                     }
-                    const label = document.createElement('label');
-                      label.htmlFor = `tag-${tag.id}`;
-                     label.textContent = tag.name;
-                     const div = document.createElement('div');
-                     div.appendChild(checkbox);
-                     div.appendChild(label);
-                    tagCheckboxes.appendChild(div);
-             });
-
-         const editForm = document.getElementById('editDevelopmentForm');
-           editForm.addEventListener('submit', async function (event) {
-                  event.preventDefault();
-                  document.getElementById('errorContainer').textContent = '';
-                const formData = new FormData(this);
-                  try {
-                      const response = await fetch(this.action, {
-                        method: 'POST',
-                         body: formData,
+                const categorySelect = document.getElementById('editDevelopmentCategoryId');
+                      if (categorySelect) {
+                        allCategories.forEach(category => {
+                         const option = document.createElement('option');
+                         option.value = category.id;
+                          option.text = category.name;
+                         if (category.id === developmentData.categoryId) {
+                           option.selected = true;
+                         }
+                         categorySelect.appendChild(option);
                      });
-                     if (!response.ok) {
-                           const errorData = await response.json();
-                           throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-                        }
-                         window.location.href = '/admin';
-                   } catch (error) {
-                       console.error("Ошибка при редактировании разработки:", error);
-                     document.getElementById('errorContainer').textContent = error.message;
-                    }
-              });
-                 function previewImage(event) {
-                     const file = event.target.files[0];
-                      if (file) {
+                }
+                  const tagCheckboxes = document.getElementById('tagCheckboxes');
+                    developmentData.tags.forEach(tag => {
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                         checkbox.value = tag.id;
+                         checkbox.name = 'tags';
+                          checkbox.id = `tag-${tag.id}`;
+                          if(developmentData.tags.some(devTag => devTag.id === tag.id)) {
+                              checkbox.checked = true;
+                         }
+                        const label = document.createElement('label');
+                          label.htmlFor = `tag-${tag.id}`;
+                         label.textContent = tag.name;
+                         const div = document.createElement('div');
+                         div.appendChild(checkbox);
+                         div.appendChild(label);
+                        tagCheckboxes.appendChild(div);
+                     });
+                  function previewImage(event) {
+                      const file = event.target.files[0];
+                     if (file) {
                             previewImg.src = URL.createObjectURL(file);
                            previewImg.style.display = 'block';
-                        } else {
-                            previewImg.style.display = 'none';
-                            previewImg.src =  developmentData.preview || '/uploads/default-preview.png';
-                      }
-                 }
-            }
-          fetchCategories();
-            fetchTags();
-            loadDevelopments();
-            
+                       } else {
+                          previewImg.style.display = 'none';
+                           previewImg.src =  developmentData.preview || '/uploads/default-preview.png';
+                     }
+                   }
+             }
+
+         async function saveChanges(id) {
+            document.getElementById('errorContainer').textContent = '';
+            const editForm = document.getElementById('editDevelopmentForm');
+            const formData = new FormData(editForm);
+              try {
+                  const response = await fetch(`/admin/developments/edit/${id}`, {
+                    method: 'POST',
+                     body: formData,
+                    });
+                   if (!response.ok) {
+                       const errorData = await response.json();
+                         throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    }
+                   const updatedData = await response.json();
+                      updateDevelopmentCard(updatedData);
+                     loadDevelopments();
+                } catch (error) {
+                    console.error("Ошибка редактирования:", error);
+                    document.getElementById('errorContainer').textContent = error.message;
+                }
+        }
+    function updateDevelopmentCard(development) {
+      const developmentItem = document.querySelector(`.development-item[data-development-id="${development.id}"]`);
+       if (developmentItem) {
+           developmentItem.querySelector('img').src = development.preview || '/uploads/default-preview.png';
+         } else {
+            console.error(`Карточка с id ${development.id} не найдена`);
+          }
+      }
         async function addTag() {
            const tagName = document.getElementById('tagName').value.trim();
                 const tagMessage = document.getElementById('tagMessage');
@@ -563,10 +547,9 @@ align-items: space-between;
             }
         document.getElementById('addDevelopmentForm').addEventListener('submit', async function(event) {
             event.preventDefault();
-              document.getElementById('errorContainer').textContent = '';
-              const formData = new FormData(this);
-
-           try {
+            document.getElementById('errorContainer').textContent = '';
+            const formData = new FormData(this);
+          try {
                 const response = await fetch('/admin/add/development/step1', {
                    method: 'POST',
                       body: formData,
@@ -609,26 +592,31 @@ align-items: space-between;
                   document.getElementById('errorContainer').textContent = error.message;
             }
         });
+      
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
                 previewImg.src = URL.createObjectURL(file);
                previewImg.style.display = 'block';
-             } else {
-                previewImg.style.display = 'none';
-                 previewImg.src = '#';
-             }
-         }
-        function openTab(tabId) {
-           tabContents.forEach(tab => {
-              tab.classList.remove('active');
-           });
-            tabButtons.forEach(button => {
-               button.classList.remove('active');
-            });
-          document.getElementById(tabId).classList.add('active');
-           document.querySelector(`[onclick="openTab('${tabId}')"]`).classList.add('active');
+           } else {
+              previewImg.style.display = 'none';
+                previewImg.src = '#';
+           }
        }
+        function openTab(tabId) {
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+             });
+           tabButtons.forEach(button => {
+              button.classList.remove('active');
+            });
+         document.getElementById(tabId).classList.add('active');
+             document.querySelector(`[onclick="openTab('${tabId}')"]`).classList.add('active');
+        }
+        fetchCategories()
+        .then(() => {
+          loadDevelopments();
+        });
         </script>
-  </body>
+</body>
 </html>

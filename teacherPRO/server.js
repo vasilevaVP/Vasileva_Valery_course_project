@@ -946,6 +946,8 @@ app.get(
     }
   }
 );
+
+// Роут для отображения формы редактирования разработки
 app.get(
   "/admin/developments/edit/:id",
   isAuthenticated,
@@ -963,8 +965,6 @@ app.get(
         return res.status(404).send("Разработка не найдена");
       }
       const categories = await Category.findAll();
-      const tags = await Tag.findAll();
-
       res.json({
         ...development.get(),
         categories: categories.map((category) => category.get()),
@@ -977,7 +977,7 @@ app.get(
     }
   }
 );
-
+// Роут для обработки редактирования разработки
 app.post(
   "/admin/developments/edit/:id",
   isAuthenticated,
@@ -988,38 +988,52 @@ app.post(
   ]),
   async (req, res) => {
     try {
-      const developmentId = req.params.id;
+      const developmentId = parseInt(req.params.id, 10);
       const { title, description, category_id, tags } = req.body;
       const development = await Development.findByPk(developmentId);
 
       let previewPath = development.preview;
       let filePath = development.file_path;
-
       if (req.files) {
         if (req.files["preview"]) {
-          previewPath = req.files["preview"][0].path.replace("public\\", "");
+          previewPath = path
+            .join("uploads", path.basename(req.files["preview"][0].path))
+            .replace(/\\/g, "/");
         }
         if (req.files["file_path"]) {
-          filePath = req.files["file_path"][0].path.replace("public\\", "");
+          filePath = path
+            .join("uploads", path.basename(req.files["file_path"][0].path))
+            .replace(/\\/g, "/");
         }
       }
-
       await development.update({
         title,
         description,
-        category_id,
+        categoryId: category_id,
         file_path: filePath,
         preview: previewPath,
       });
-
       if (tags && tags.length > 0) {
         const tagIds = Array.isArray(tags) ? tags : tags.split(",").map(Number);
         await development.setTags(tagIds);
       } else {
         await development.setTags([]);
       }
-
-      res.redirect("/admin");
+      const updatedDevelopment = await Development.findByPk(developmentId, {
+        include: [
+          { model: Category, as: "category" },
+          { model: Tag, as: "tags", through: { attributes: [] } },
+        ],
+      });
+      res.json({
+        ...updatedDevelopment.get(),
+        category: updatedDevelopment.category
+          ? updatedDevelopment.category.get()
+          : null,
+        tags: updatedDevelopment.tags
+          ? updatedDevelopment.tags.map((tag) => tag.get())
+          : [],
+      });
     } catch (error) {
       console.error("Ошибка редактирования разработки:", error);
       res.status(500).send("Internal Server Error");
