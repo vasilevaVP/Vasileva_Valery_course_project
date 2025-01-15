@@ -545,6 +545,7 @@ const fileFilter = (req, file, cb) => {
     ".png",
     ".pdf",
     ".docx",
+    ".ppt",
     ".pptx",
     ".mp4",
   ];
@@ -569,7 +570,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 100 * 1024 * 1024 },
 });
 // AJAX endpoints для добавления
 app.post(
@@ -624,6 +625,13 @@ app.post(
     }
   }
 );
+
+// Функция для создания URL-адреса step2 в зависимости от роли
+function getAddDevelopmentStep2Route(req, developmentId) {
+  return req.session.user.role === "admin"
+    ? `/admin/add/development/step2/${developmentId}`
+    : `/user/add/development/step2/${developmentId}`;
+}
 
 app.post(
   "/admin/add/development/step1",
@@ -690,11 +698,125 @@ app.post(
   }
 );
 
-// Этап 2: Добавление тегов к разработке
 app.post(
   "/admin/add/development/step2/:developmentId",
   isAuthenticated,
   hasRole("admin"),
+  async (req, res) => {
+    try {
+      const developmentId = parseInt(req.params.developmentId, 10);
+      if (isNaN(developmentId)) {
+        return res.status(400).json({ error: "Некорректный ID разработки" });
+      }
+      const { tags } = req.body;
+      const development = await Development.findByPk(developmentId);
+      if (!development) {
+        return res.status(404).json({ error: "Разработка не найдена" });
+      }
+
+      let tagIds = [];
+      if (tags) {
+        tagIds = Array.isArray(tags)
+          ? tags
+          : tags.split(",").map(Number).filter(Boolean);
+      }
+      const developmentTags = await development.getTags();
+      for (const tag of developmentTags) {
+        await DevelopmentTags.destroy({
+          where: { developmentId, tagId: tag.id },
+        });
+      }
+      if (tagIds && tagIds.length > 0) {
+        const toCreate = tagIds.map((tagId) => ({
+          developmentId: development.id,
+          tagId: tagId,
+        }));
+        await DevelopmentTags.bulkCreate(toCreate, {
+          validate: true,
+          individualHooks: true,
+        });
+      }
+
+      res.json({ success: true, redirect: "/admin" });
+    } catch (error) {
+      console.error("Ошибка при добавлении тегов:", error);
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        return res.status(400).json({ error: errors.join(", ") });
+      }
+      res.status(500).json({ error: "Ошибка сервера" });
+    }
+  }
+);
+
+// Этап 1: Создание разработки (без тегов) для пользователя
+app.post(
+  "/user/add/development/step1",
+  isAuthenticated,
+  upload.fields([
+    { name: "preview", maxCount: 1 },
+    { name: "file_path", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const { title, description, category_id } = req.body;
+      const userId = req.session.user.id;
+
+      if (!req.files || !req.files["preview"] || !req.files["file_path"]) {
+        return res.status(400).json({ error: "Не загружены файлы." });
+      }
+
+      const previewFile = req.files["preview"][0];
+      const filePathFile = req.files["file_path"][0];
+
+      const previewPath = path
+        .join("uploads", path.basename(previewFile.path))
+        .replace(/\\/g, "/");
+      const filePath = path
+        .join("uploads", path.basename(filePathFile.path))
+        .replace(/\\/g, "/");
+
+      const parsedCategoryId = parseInt(category_id, 10);
+      if (isNaN(parsedCategoryId)) {
+        return res.status(400).json({ error: "Некорректный ID категории" });
+      }
+      const development = await Development.create({
+        title,
+        description,
+        file_path: filePath,
+        preview: previewPath,
+        categoryId: parsedCategoryId,
+        userId,
+      });
+      const tags = await Tag.findAll();
+      res.json({
+        success: true,
+        developmentId: development.id,
+        tagsHtml: renderTagsHtml(tags, development.id),
+      });
+    } catch (error) {
+      console.error("Ошибка при добавлении разработки:", error);
+      if (error instanceof multer.MulterError) {
+        return res.status(400).json({ error: error.message });
+      } else if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        return res.status(400).json({ error: errors.join(", ") });
+      }
+      res.status(500).json({ error: "Ошибка при добавлении разработки" });
+    }
+  }
+);
+
+// Этап 2: Добавление тегов к разработке для пользователя
+app.post(
+  "/user/add/development/step2/:developmentId",
+  isAuthenticated,
   async (req, res) => {
     try {
       const developmentId = parseInt(req.params.developmentId, 10);
@@ -730,7 +852,7 @@ app.post(
           individualHooks: true,
         });
       }
-      res.json({ success: true, redirect: "/admin" });
+      res.json({ success: true, redirect: "/profile" });
     } catch (error) {
       console.error("Ошибка при добавлении тегов:", error);
       if (
@@ -744,6 +866,25 @@ app.post(
     }
   }
 );
+
+// Функция для создания URL-адреса в зависимости от роли пользователя
+function getAddDevelopmentRoute(req) {
+  return req.session.user.role === "admin"
+    ? "/admin/add/development"
+    : "/user/addDevelopment";
+}
+
+// Функция для создания URL-адреса step2 в зависимости от роли
+function getAddDevelopmentStep2Route(req, developmentId) {
+  return req.session.user.role === "admin"
+    ? `/admin/add/development/step2/${developmentId}`
+    : `/user/add/development/step2/${developmentId}`;
+}
+
+// Роут для отображения страницы загрузки для пользователя
+app.get("/user/addDevelopment", isAuthenticated, async (req, res) => {
+  res.render("addDevelopment", { user: req.session.user });
+});
 
 function renderTagsHtml(tags, developments) {
   return `
@@ -777,6 +918,34 @@ app.post(
     }
   }
 );
+
+app.get(
+  "/admin/developments",
+  isAuthenticated,
+  hasRole("admin"),
+  async (req, res) => {
+    try {
+      const developments = await Development.findAll({
+        include: [
+          { model: Category, as: "category" },
+          { model: Tag, as: "tags", through: { attributes: [] } },
+        ],
+      });
+      res.json(
+        developments.map((development) => ({
+          ...development.get(),
+          category: development.category ? development.category.get() : null,
+          tags: development.tags
+            ? development.tags.map((tag) => tag.get())
+            : [],
+        }))
+      );
+    } catch (error) {
+      console.error("Ошибка получения разработок:", error);
+      res.status(500).json({ error: "Ошибка получения данных" });
+    }
+  }
+);
 app.get(
   "/admin/developments/edit/:id",
   isAuthenticated,
@@ -785,20 +954,30 @@ app.get(
     try {
       const developmentId = req.params.id;
       const development = await Development.findByPk(developmentId, {
-        include: [Category, Tag],
+        include: [
+          { model: Category, as: "category" },
+          { model: Tag, as: "tags", through: { attributes: [] } },
+        ],
       });
       if (!development) {
         return res.status(404).send("Разработка не найдена");
       }
       const categories = await Category.findAll();
       const tags = await Tag.findAll();
-      res.render("admin/development_edit", { development, categories, tags });
+
+      res.json({
+        ...development.get(),
+        categories: categories.map((category) => category.get()),
+        tags: development.tags.map((tag) => tag.get()),
+        categoryId: development.categoryId,
+      });
     } catch (error) {
       console.error("Ошибка получения разработки для редактирования:", error);
       res.status(500).send("Internal Server Error");
     }
   }
 );
+
 app.post(
   "/admin/developments/edit/:id",
   isAuthenticated,
@@ -862,6 +1041,17 @@ app.get(
     }
   }
 );
+
+// Функция для получения списка категорий для пользователя
+app.get("/user/categories", async (req, res) => {
+  try {
+    const categories = await Category.findAll();
+    res.status(200).json(categories);
+  } catch (error) {
+    console.error("Ошибка получения категорий:", error);
+    res.status(500).send("Ошибка сервера");
+  }
+});
 
 app.get("/admin/tags", isAuthenticated, hasRole("admin"), async (req, res) => {
   try {
@@ -989,6 +1179,7 @@ app.get("/profile", isAuthenticated, async (req, res) => {
     res.status(500).send("Ошибка сервера");
   }
 });
+
 // Роут для выхода
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {

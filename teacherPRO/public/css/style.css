@@ -608,7 +608,7 @@ section13 h2 {
   margin-right: 15px;
 }
 
-/*Ваши разработки*/
+/*Добавление*/
 section20 form {
   width: 1180px;
   margin: 0 auto;
@@ -633,29 +633,20 @@ section20 [type="text"] {
   margin-bottom: 60px;
 }
 
-.checkbox-group {
-  width: 971px;
-  margin-bottom: 60px;
-  display: flex;
-  justify-content: space-between;
-}
-.checkbox-group p {
-  font: var(--p);
-  margin-bottom: 15px;
-}
-
-.checkbox-group select {
-  height: 50px;
+section20 button {
+  width: 200px;
+  height: 60px;
   border: none;
+  background: var(--blue);
+  padding: 20px 20px;
   border-radius: 10px;
-  background: white;
-  color: #121212;
-  font: var(--p);
-  padding: 12px;
-  align-items: center;
-  display: inline-block;
+  padding: 0 30px;
+  color: #fff;
+  font: 400 20px Geologica;
+  cursor: pointer;
+  margin-top: 50px;
+  margin-bottom: 200px;
 }
-
 .download {
   display: flex;
   width: 1180px;
@@ -689,32 +680,29 @@ section20 [type="text"] {
   text-align: center;
 }
 
-#editor {
+#developmentDescription {
   background-color: rgb(255, 255, 255);
   padding: 10px;
   min-height: 150px;
   border-radius: 0 0 10px 10px;
   font: var(--p);
-  margin-bottom: 80px;
+  margin-bottom: 30px;
+}
+.form-group textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font: 400 16px Geologica;
 }
 
 .toolbar {
   background-color: #bacce0;
   padding: 10px 20px;
+  display: flex;
   border-radius: 10px 10px 0 0;
 }
 
-.toolbar button {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 10px;
-  background-color: #bacce0;
-  cursor: pointer;
-}
-
-.toolbar button:hover {
-  background-color: #d5e4f6;
-}
 .toolbar img {
   width: 30px;
 }

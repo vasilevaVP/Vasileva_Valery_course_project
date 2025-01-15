@@ -15,7 +15,75 @@
     <link rel="icon" href="./img/iconlogo.ico">
 
 </head>
+<style>
+.form-group label {
+            display: block;
+            font: var(--p);
+            font-weight: 500;
+            margin-bottom: 30px;
+            color: #555;
+        }
 
+
+        .form-group select {
+            display: inline;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font: 400 16px Geologica;
+            
+        }
+
+   
+        .button-container{
+            display: flex;
+            justify-content: flex-end;
+        }
+  
+
+        .form-section button:hover {
+            background-color: #0056b3;
+        }
+        .preview-container {
+            margin-top: 10px;
+            max-width: 200px;
+            max-height: 200px;
+        }
+        .preview-container img{
+            max-width: 200px;
+            max-height: 200px;
+        }
+        input[type="file" ]{
+
+          background-color: #f4f4f4;
+          padding:70px 140px;
+          border-radius: 5px;
+          margin-bottom: 30px;
+ 
+        }
+        .toolbar label {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 10px;
+  background-color: #bacce0;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+        ::file-selector-button {
+        height: 40px;
+        border: none;
+        background: #a1a1a1;
+        padding: 20px 20px;
+        border-radius: 5px;
+        padding: 0 30px;
+        margin: 0 auto;
+        color: #fff;
+        font: 400 12px Geologica;
+        cursor: pointer;
+        text-align: center;
+        }
+     
+</style>
 <body>
     <header>
         <div class="logo"><a href="/index"><img src="./img/logo1.svg" alt=""></div></a>
@@ -54,81 +122,51 @@
         </div>
     </header>
     <section20>
-        <h2>Поделитесь своей образовательной разработкой </h2>
-         <form method="post" action="/addDevelopment" enctype="multipart/form-data">
-        <form>
-            <h3>Название</h3>
-            <input type="text" required placeholder="Например, презентация на тему «История России» для 5 класса">
+    <h2>Поделитесь своей образовательной разработкой </h2>
+    <form id="addDevelopmentForm" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="developmentTitle">Название разработки:</label>
+            <input type="text" id="developmentTitle" name="title" placeholder="Например, презентация на тему «История России» для 5 класса" required>
+       </div>
+     
+       <div class="form-group">
+           <label for="developmentDescription">Описание:</label>
+    
+    <div class="toolbar">
 
-            <h3>Укажите категорию</h3>
-            <div class="checkbox-group">
-                <div class="chec">
-                        <select id="category" name="category">
-                          <option value="presentation">Презентация</option>
-                          <option value="presentation">Конспект</option>
-                          <option value="presentation">Лекция</option>
-                          <option value="presentation">Тесты</option>
-                          <option value="presentation">Памятки</option>
-                        </select>
-                </div>
-               
-            </div>
+        <label ="formatText('bold')"><b><img src="./img/bold.svg" alt=""></b></label>
+        <label onclick="formatText('italic')"><i><img src="./img/italic.svg" alt=""></i></label>
+        <label onclick="formatText('underline')"><u><img src="./img/underline.svg" alt=""></u></label>
+        <label onclick="insertLink()"><img src="./img/link.svg" alt=""></label>
+        <label onclick="insertOrderedList()"><img src="./img/list-numbers.svg" alt=""></label>
+        <label onclick="insertUnorderedList()"><img src="./img/list.svg" alt=""></label>
+        <label onclick="undo()"><img src="./img/undo.svg" alt=""></label>
+        <label onclick="redo()"><img src="./img/redo.svg" alt=""></label>
+  </div>
+           <textarea id="developmentDescription" name="description" rows="4"></textarea>
+       </div>
+        <div class="form-group">
+            <label for="developmentFile">Файл разработки:</label>
+            <input type="file" id="developmentFile" name="file_path" accept=".pdf,.docx,.pptx,.mp4" required>
+        </div>
+       <div class="form-group">
+           <label for="developmentPreview">Превью:</label>
+            <input type="file"  id="developmentPreview" name="preview" accept=".jpg,.jpeg,.png"  required onchange="previewImage(event)">
+        </div>
+       <div class="preview-container">
+           <img id="preview-img" src="#" alt="Превью" style="display:none;">
+       </div>
+       <div class="form-group">
+          <label for="developmentCategoryId">Категория:</label>
+            <select id="developmentCategoryId" name="category_id" required></select>
+       </div>
+       <div id="tagsContainer"></div>
+      <div id="errorContainer" class="error-message"></div>
+      <button type="submit">Загрузить</button>
+  </form>
+    <div id="developmentMessage"></div>
+</section20>
 
-            <h3>Выберите файл и обложку</h3>
-            <div class="download">
-            <div class="fl">
-                <input type="file" required>
-            </div>
-            <div class="fl">
-                <input type="file"  name="preview" accept=".jpg,.jpeg,.png" >
-            </div></div>
-            <h3>Описание</h3>
-            <div class="toolbar">
-
-                <button onclick="formatText('bold')"><b><img src="./img/bold.svg" alt=""></b></button>
-                <button onclick="formatText('italic')"><i><img src="./img/italic.svg" alt=""></i></button>
-                <button onclick="formatText('underline')"><u><img src="./img/underline.svg" alt=""></u></button>
-                <button onclick="insertLink()"><img src="./img/link.svg" alt=""></button>
-                <button onclick="insertOrderedList()"><img src="./img/list-numbers.svg" alt=""></button>
-                <button onclick="insertUnorderedList()"><img src="./img/list.svg" alt=""></button>
-                <button onclick="undo()"><img src="./img/undo.svg" alt=""></button>
-                <button onclick="redo()"><img src="./img/redo.svg" alt=""></button>
-            </div>
-
-            <div id="editor" contenteditable="true"></div>
-            <h3>Выберите теги</h3>
-            <div class="checkbox-group">
-                <div class="chec">
-                    <p><input type="checkbox" id="presentations" name="materials">1 класс</p>
-                    <p><input type="checkbox" id="notes" name="materials">2 класс</p>
-                    <p><input type="checkbox" id="audio" name="materials">3 класс</p>
-                    <p><input type="checkbox" id="audio" name="materials">4 класс</p>
-                    <p><input type="checkbox" id="audio" name="materials">5 класс</p>
-
-
-                </div>
-                <div class="chec">
-                    <p><input type="checkbox" id="audio" name="materials">6 класс</p>
-                    <p><input type="checkbox" id="audio" name="materials">7 класс</p>
-                    <p><input type="checkbox" id="audio" name="materials">8 класс</p>
-                    <p><input type="checkbox" id="audio" name="materials">9 класс</p>
-                    <p><input type="checkbox" id="audio" name="materials">10-11 класс</p>
-                </div>
-                <div class="chec">
-                    <p><input type="checkbox" id="audio" name="materials">PDF</p>
-                    <p><input type="checkbox" id="audio" name="materials">DOCX</p>
-                    <p><input type="checkbox" id="audio" name="materials">MP4</p>
-                    <p><input type="checkbox" id="audio" name="materials">MP3</p>
-                    <p><input type="checkbox" id="audio" name="materials">PPTX</p>
-                </div>
-            </div>
-            <div class="sb">
-                <p><input type="checkbox" required> Я принимаю правила публикации</p>
-
-                <button>Загрузить</button>
-            </div>
-        </form>
-    </section20>
     <footer>
         </div>
         <div class="two">
@@ -173,35 +211,86 @@
         </div>
     </footer>
 
-    <script>
-        let editor = document.getElementById('editor');
-
-        function formatText(command) {
-            document.execCommand(command, false, null);
-        }
-
-        function insertLink() {
-            let url = prompt("Введите URL ссылки:", "http://");
-            if (url) {
-                document.execCommand("insertHTML", false, `<a href="${url}">${url}</a>`);
+   <script>
+    const categorySelect = document.getElementById('developmentCategoryId');
+    const tagCheckboxes = document.getElementById('tagCheckboxes');
+    const previewImg = document.getElementById('preview-img');
+ async function fetchCategories() {
+        try {
+            const response = await fetch('/user/categories');
+           if (!response.ok) {
+               throw new Error('Failed to fetch categories');
             }
+            const categories = await response.json();
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                 option.text = category.name;
+                categorySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Ошибка при получении категорий:', error);
         }
-
-        function insertOrderedList() {
-            document.execCommand("insertOrderedList", false, null);
+ }
+   fetchCategories();
+   document.getElementById('addDevelopmentForm').addEventListener('submit', async function(event) {
+   event.preventDefault();
+   document.getElementById('errorContainer').textContent = '';
+     const formData = new FormData(this);
+        try {
+            const response = await fetch('/user/add/development/step1', {
+               method: 'POST',
+               body: formData,
+          });
+            if (!response.ok) {
+               const errorData = await response.json();
+              throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+           const data = await response.json();
+             if (data.success) {
+                document.getElementById('tagsContainer').innerHTML = data.tagsHtml;
+                this.action = `/user/add/development/step2/${data.developmentId}`;
+                this.removeEventListener('submit', arguments.callee);
+                this.addEventListener('submit', async function (event) {
+                   event.preventDefault();
+                    const formData2 = new FormData(this);
+                  try {
+                    const response2 = await fetch(this.action, {
+                      method: 'POST',
+                      body: formData2,
+                 });
+                     if (!response2.ok) {
+                          const errorData2 = await response2.json();
+                         throw new Error(errorData2.error || `HTTP error! status: ${response2.status}`);
+                     }
+                     const data2 = await response2.json();
+                      if(data2.success) {
+                            window.location.href = "/profile";
+                      }
+                 } catch (error) {
+                       console.error('Ошибка при добавлении разработки:', error);
+                      document.getElementById('errorContainer').textContent = error.message;
+                   }
+               });
+             } else {
+                   document.getElementById('errorContainer').textContent =  data.error
+            }
+        } catch (error) {
+            console.error('Ошибка при добавлении разработки:', error);
+            document.getElementById('errorContainer').textContent = error.message;
         }
-
-        function insertUnorderedList() {
-            document.execCommand("insertUnorderedList", false, null);
+     });
+ function previewImage(event) {
+    const file = event.target.files[0];
+     if (file) {
+         previewImg.src = URL.createObjectURL(file);
+       previewImg.style.display = 'block';
+     } else {
+          previewImg.style.display = 'none';
+          previewImg.src = '#';
         }
-
-        function undo() {
-            document.execCommand("undo", false, null);
-        }
-
-        function redo() {
-            document.execCommand("redo", false, null);
-        }
+ }
+ 
     </script>
 
 </body>
