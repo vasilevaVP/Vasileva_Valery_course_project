@@ -1120,7 +1120,6 @@ app.get("/login", (req, res) => {
 // Роут для обработки авторизации
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const user = await User.findOne({ where: { email }, include: Role });
     if (user && (await bcrypt.compare(password, user.password))) {
